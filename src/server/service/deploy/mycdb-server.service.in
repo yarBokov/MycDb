@@ -1,0 +1,22 @@
+[Unit]
+Description=MycDb DataServer service
+After=mycdb_depenpency.target
+Wants=mycdb_depenpency.target
+
+[Service]
+User=root
+Group=root
+ExecStart=/opt/mycdb/bin/mycdb-server
+WorkingDirectory=/
+KillMode=mixed
+Restart=always
+RestartSec=60
+IgnoreSIGPIPE=no
+StandardOutput=journal
+StandardError=inherit
+ExecReload=/bin/kill -SIGHUP $MAINPID
+TimeoutStopSec=${SERVICE_TIMEOUT}
+LimitNOFILE=${SERVICE_OPEN_FILE_LIMIT}
+
+[Install]
+WantedBy=multi-user.target

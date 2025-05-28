@@ -1,0 +1,6 @@
+/.hidden
+/libsbuilders/*
+
+/src/tools/*
+/src/auth/
+/src/cluster/

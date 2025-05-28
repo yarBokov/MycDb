@@ -1,0 +1,5 @@
+include(${CMAKE_CURRENT_LIST_DIR}/libs/fmt.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/libs/zlib.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/libs/krb5.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/libs/openssl.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/libs/libssh.cmake)

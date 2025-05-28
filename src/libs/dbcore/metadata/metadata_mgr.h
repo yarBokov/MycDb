@@ -1,0 +1,54 @@
+#ifndef __METADATA_MD_MGR_H
+#define __METADATA_MD_MGR_H
+
+#include "table_mgr.h"
+#include "view_mgr.h"
+#include "stat_mgr.h"
+
+#include "libs/dbcore/tx/transaction.h"
+
+namespace dbcore::metadata
+{
+    class metadata_mgr
+    {
+        private:
+            std::unique_ptr<table_mgr> m_tbl_mgr;
+            std::unique_ptr<view_mgr> m_view_mgr;
+            std::unique_ptr<stat_mgr> m_stat_mgr;
+
+        public:
+            metadata_mgr(bool is_new, tx::transaction& tx)
+            {
+                m_tbl_mgr = std::make_unique<table_mgr>(is_new, tx);
+                m_view_mgr = std::make_unique<view_mgr>(is_new, tx);
+                m_stat_mgr = std::make_unique<stat_mgr>(*m_tbl_mgr, tx);
+            }
+
+            void create_table(std::string tblname, record::schema& sch, tx::transaction& tx)
+            {
+                m_tbl_mgr->create_table(tblname, sch, tx);
+            }
+
+            std::unique_ptr<record::layout> get_layout(std::string tblname, tx::transaction& tx)
+            {
+                return m_tbl_mgr->get_layout(tblname, tx);
+            }
+
+            void create_view(std::string vwname, std::string vwdef, tx::transaction& tx)
+            {
+                m_view_mgr->create_view(vwname, vwdef, tx);
+            }
+
+            std::string get_view_def(std::string vwname, tx::transaction& tx)
+            {
+                m_view_mgr->get_view_def(vwname, tx);
+            }
+
+            std::shared_ptr<stat_info> get_stat_info(std::string tblname, record::layout& layout, tx::transaction& tx)
+            {
+                return m_stat_mgr->get_stat_info(tblname, layout, tx);
+            }
+        };
+}
+
+#endif
