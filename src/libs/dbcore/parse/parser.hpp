@@ -1,5 +1,5 @@
-#ifndef __PARSE_LEXER_H
-#define __PARSE_LEXER_H
+#ifndef __PARSE_PARSER_H
+#define __PARSE_PARSER_H
 
 #include "ops_data/create_index_data.h"
 #include "ops_data/create_table_data.h"

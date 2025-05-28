@@ -2,7 +2,7 @@
 #define __QUERY_TERM_H
 
 #include "expression.h"
-#include "plan/plan.h"
+#include "plan/i_plan.h"
 #include <limits>
 
 namespace dbcore::query
@@ -18,14 +18,14 @@ namespace dbcore::query
                 : m_lhs(lhs), m_rhs(rhs)
             {}
 
-            bool is_satisfied(scan::scan& s) const
+            bool is_satisfied(scan::i_scan& s) const
             {
                 auto lhsval = m_lhs.evaluate(s);
                 auto rhsval = m_rhs.evaluate(s);
                 return lhsval == rhsval;
             }
 
-            int calculate_reduction(const plan::plan& p) const
+            int calculate_reduction(const plan::i_plan& p) const
             {
                 if (m_lhs.is_field_name() && m_rhs.is_field_name()) {
                     std::string lhs_name = m_lhs.as_field_name();

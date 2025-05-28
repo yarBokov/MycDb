@@ -16,17 +16,17 @@ namespace dbcore::metadata
                 : m_num_blocks(num_blocks), m_num_recs(num_recs)
             {}
             
-            int blocks_accessed() const
+            std::size_t blocks_accessed() const
             {
                 return m_num_blocks;
             }
 
-            int records_output() const
+            std::size_t records_output() const
             {
                 return m_num_recs;
             }
 
-            int distinct_values(const std::string& fldname) const
+            std::size_t distinct_values(const std::string& fldname) const
             {
                 return 1 + (m_num_recs / 3); //TODO: make useful calculation later
             }

@@ -24,7 +24,7 @@ namespace dbcore::query
                 terms.insert(terms.end(), pred.terms.begin(), pred.terms.end());
             }
 
-            bool is_satisfied(scan::scan& s) const
+            bool is_satisfied(scan::i_scan& s) const
             {
                 for (const auto& t : terms)
                     if (!t.is_satisfied(s))

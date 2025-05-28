@@ -77,7 +77,7 @@ class BuildSystem:
         
         # Libraries directory
         if self.libs_dir:
-            args.append(f"-DVA_LIBS_DIR={self.libs_dir}")
+            args.append(f"-DLIBS_DIR={self.libs_dir}")
         
         # CPack generator
         # args.append(f"-DCPACK_GENERATOR={self.cpack_generator}")

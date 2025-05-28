@@ -1,5 +1,4 @@
 /.hidden
-/libsbuilders/*
 
 /src/tools/*
 /src/auth/
