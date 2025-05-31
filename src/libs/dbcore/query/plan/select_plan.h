@@ -13,12 +13,12 @@ namespace dbcore::query::plan
     class select_plan : public i_plan
     {
         private:
-            std::shared_ptr<i_plan> m_plan;
+            std::unique_ptr<i_plan> m_plan;
             query::predicate m_pred;
 
         public:
-            explicit select_plan(std::shared_ptr<i_plan> plan, const query::predicate& pred)
-                : m_plan(plan), m_pred(pred)
+            explicit select_plan(std::unique_ptr<i_plan> plan, const query::predicate& pred)
+                : m_plan(std::move(plan)), m_pred(pred)
             {}
 
             std::unique_ptr<scan::i_scan> open() override

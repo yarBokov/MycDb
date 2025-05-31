@@ -27,6 +27,7 @@ namespace dbcore::buffer_mgr
             buffer* choose_unpinned_buffer();
             
         public:
+            buffer_mgr() = default;
             explicit buffer_mgr(std::shared_ptr<file_mgr::file_mgr> fm, 
                 std::shared_ptr<log_mgr::log_mgr> lm, int num_bufs);
 

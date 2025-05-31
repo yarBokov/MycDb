@@ -9,10 +9,10 @@ namespace dbcore::query::plan
 {
     class product_plan;
 
-    product_plan* get_best_plan(std::shared_ptr<i_plan> plan_lhs, std::shared_ptr<i_plan> plan_rhs)
+    product_plan* get_best_plan(std::unique_ptr<i_plan> plan_lhs, std::unique_ptr<i_plan> plan_rhs)
     {
-        auto prod1 = new product_plan(plan_lhs, plan_rhs);
-        auto prod2 = new product_plan(plan_rhs, plan_lhs);
+        auto prod1 = new product_plan(std::move(plan_lhs), std::move(plan_rhs));
+        auto prod2 = new product_plan(std::move(plan_rhs), std::move(plan_lhs));
         int blocks1 = prod1->blocks_accessed();
         int blocks2 = prod2->blocks_accessed();
         auto best_plan = (blocks1 < blocks2) ? prod1 : prod2;
@@ -26,13 +26,13 @@ namespace dbcore::query::plan
     class product_plan : public i_plan
     {
         private:
-            std::shared_ptr<i_plan> m_plan_lhs;
-            std::shared_ptr<i_plan> m_plan_rhs;
+            std::unique_ptr<i_plan> m_plan_lhs;
+            std::unique_ptr<i_plan> m_plan_rhs;
             record::schema m_sch;
 
         public:
-            explicit product_plan(std::shared_ptr<i_plan> plan_lhs, std::shared_ptr<i_plan> plan_rhs)
-                : m_plan_lhs(plan_lhs), m_plan_rhs(plan_rhs)
+            explicit product_plan(std::unique_ptr<i_plan> plan_lhs, std::unique_ptr<i_plan> plan_rhs)
+                : m_plan_lhs(std::move(plan_lhs)), m_plan_rhs(std::move(plan_rhs))
             {
                 m_sch.add_all(m_plan_lhs->schema());
                 m_sch.add_all(m_plan_rhs->schema());

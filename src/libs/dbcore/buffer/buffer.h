@@ -18,6 +18,7 @@ namespace dbcore::buffer_mgr
             int m_lsn;
 
         public:
+            buffer() = default;
             buffer(std::shared_ptr<file_mgr::file_mgr> fm, std::shared_ptr<log_mgr::log_mgr> lm)
                 : m_file_mgr(fm)
                 , m_log_mgr(lm)

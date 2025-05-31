@@ -12,12 +12,12 @@ namespace dbcore::query::plan
     class project_plan : public i_plan
     {
         private:
-            std::shared_ptr<i_plan> m_plan;
+            std::unique_ptr<i_plan> m_plan;
             record::schema m_sch;
 
         public:
-            explicit project_plan(std::shared_ptr<i_plan> plan, const std::vector<std::string>& fieldlist)
-                : m_plan(plan)
+            explicit project_plan(std::unique_ptr<i_plan> plan, const std::vector<std::string>& fieldlist)
+                : m_plan(std::move(plan))
             {
                 for (const auto& fldname : fieldlist)
                     m_sch.add(fldname, m_plan->schema());

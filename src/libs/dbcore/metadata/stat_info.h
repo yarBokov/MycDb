@@ -12,6 +12,7 @@ namespace dbcore::metadata
             int m_num_recs;
             
         public:
+            stat_info() : m_num_blocks(0), m_num_recs(0) {}
             stat_info(int num_blocks, int num_recs)
                 : m_num_blocks(num_blocks), m_num_recs(num_recs)
             {}

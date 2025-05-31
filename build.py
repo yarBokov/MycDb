@@ -38,7 +38,7 @@ class BuildSystem:
         parser.add_argument("--libs-dir", 
                           type=str,
                           help="Path to external libraries directory")
-        # parser.add_argument("--cpack-generator", 
+        # parser.add_argument("--pack", 
         #                   type=str,
         #                   default=self.cpack_generator,
         #                   help="CPack generator to use")

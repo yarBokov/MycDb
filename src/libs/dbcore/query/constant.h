@@ -17,8 +17,8 @@ namespace dbcore::query
 
         public:
             constant(int ival): m_value(ival) {}
-            constant(std::string sval): m_value(sval) {}
-            constant(std::string&& sval) noexcept : m_value(sval) {}
+            constant(const std::string& sval): m_value(sval) {}
+            constant(std::string&& sval) noexcept : m_value(std::move(sval)) {}
 
             constant(const constant&) = default;
             constant(constant&&) noexcept = default;

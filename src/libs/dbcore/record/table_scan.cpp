@@ -1,5 +1,5 @@
 #include "table_scan.h"
-#include "libs/common/config.h"
+#include "libs/common/config.hpp"
 
 namespace dbcore::record
 {

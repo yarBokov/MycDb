@@ -15,8 +15,8 @@ IgnoreSIGPIPE=no
 StandardOutput=journal
 StandardError=inherit
 ExecReload=/bin/kill -SIGHUP $MAINPID
-TimeoutStopSec=${SERVICE_TIMEOUT}
-LimitNOFILE=${SERVICE_OPEN_FILE_LIMIT}
+TimeoutStopSec=${MYC_SERVICE_TIMEOUT}
+LimitNOFILE=${MYC_SERVICE_FILE_LIMIT}
 
 [Install]
 WantedBy=multi-user.target

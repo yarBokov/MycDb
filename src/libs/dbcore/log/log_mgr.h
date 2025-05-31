@@ -37,7 +37,7 @@ namespace dbcore::log_mgr
             }
 
         public:
-            log_mgr() = delete;
+            log_mgr() = default;
             ~log_mgr() = default;
 
             log_mgr(std::shared_ptr<f_m> fm, const std::string& log_file)

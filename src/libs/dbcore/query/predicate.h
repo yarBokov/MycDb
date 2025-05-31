@@ -33,7 +33,7 @@ namespace dbcore::query
                 return true;
             }
 
-            int calculate_reduction(const plan::plan& p) const
+            int calculate_reduction(const plan::i_plan& p) const
             {
                 int factor = 1;
                 for (const auto& t : terms)

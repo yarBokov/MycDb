@@ -34,6 +34,7 @@ namespace dbcore::record
             };
 
         public:
+            schema() = default;
             void add_field(const std::string& fldname, sql_types type, int length)
             {
                 m_fields.push_back(fldname);

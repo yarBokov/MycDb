@@ -4,6 +4,7 @@ project(mycelliaDB
         LANGUAGES C CXX
         DESCRIPTION "Mycellia Database Prototype")
 
+include("cmake/utils.cmake")
 include("cmake/build.cmake")
 include("cmake/libs.cmake")
 

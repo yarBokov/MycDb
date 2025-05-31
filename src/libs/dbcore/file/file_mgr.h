@@ -63,7 +63,7 @@ namespace dbcore::file_mgr
             }
         
         public:
-            file_mgr() = delete;
+            file_mgr() = default;
             ~file_mgr() = default;
 
             file_mgr(const std::filesystem::path& db_file_directory, int blk_size);

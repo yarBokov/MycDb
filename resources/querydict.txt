@@ -16,3 +16,4 @@ view
 as
 index
 on
+join

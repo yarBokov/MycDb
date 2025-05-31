@@ -37,6 +37,68 @@ macro(create_output_directories_configuration)
 endmacro()
 
 macro(set_definitions)
+    set(CMAKE_CXX_STANDARD 17)
+    set(CMAKE_CXX_STANDARD_REQUIRED ON)
+    set(CMAKE_CXX_EXTENSIONS OFF)
+    set(CMAKE_SKIP_RPATH ON)
+
+    # definitions for myc db services
+    set(MYC_SERVICE_TIMEOUT 60)
+    set(MYC_SERVICE_FILE_LIMIT "8192:262144")
+
+    set(def_warnings
+        -Wall
+        -Wcast-align
+        -Wdouble-promotion
+        -Wextra
+        -Wformat
+        -Wformat-security
+        -Wextra-semi
+        -Wlogical-op
+        -Wmisleading-indentation
+        -Wnon-virtual-dtor
+        -Wuseless-cast
+        -Wconversion
+        -Wunused
+        -Wstack-protector
+        -Winline
+        -Wshadow
+        -Wfloat-equal
+        -Wold-style-cast)
+
+    set(def_errors -Werror=return-type)
+    set(def_no_errors -Wno-error=missing-declarations)
+
+    set(def_flags
+        -fexceptions
+        -fpie)
+
+    set(def_security
+        -Werror=format-security
+        -fPIC
+        -fstack-clash-protection
+        -fstack-protector-strong
+        -ftrapv
+        -pie)
+
+    set(all_defs
+        ${def_flags}
+        ${def_warnings}
+        ${def_errors}
+        ${def_no_errors}
+        ${def_security})
+
+    set(cxx_debug_flags ${all_defs} -O0 -g3 -ggdb)
+
+    str_weave(CMAKE_CXX_FLAGS_DEBUG ${cxx_debug_flags})
+    str_weave(CMAKE_CXX_FLAGS_RELWITHDEBINFO ${all_defs})
+
+    exec_program(uname ARGS -r OUTPUT_VARIABLE CMAKE_SYSTEM_VERSION)
+
+    find_program(CCACHE "ccache")
+    if(CCACHE)
+        set(CMAKE_CXX_COMPILER_LAUNCHER ${CCACHE})
+    endif(CCACHE)
 
 endmacro()
 

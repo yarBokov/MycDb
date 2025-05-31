@@ -25,6 +25,7 @@ namespace dbcore::record
             }
 
         public:
+            layout() = default;
             layout(schema& schema)
                 : m_schema(schema)
             {

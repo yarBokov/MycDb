@@ -20,6 +20,7 @@ namespace dbcore::tx
             }
 
         public:
+            concurrency_mgr() = default;
             void s_lock(const file_mgr::block_id& blk)
             {
                 std::lock_guard<std::mutex> lock(mtx);

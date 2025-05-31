@@ -34,6 +34,7 @@ namespace dbcore::tx
             }
 
         public:
+            transaction() = default;
             transaction(file_mgr::file_mgr& fm, log_mgr::log_mgr& lm, buffer_mgr::buffer_mgr& bm);
     
             void commit();

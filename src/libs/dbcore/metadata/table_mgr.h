@@ -12,8 +12,6 @@ namespace dbcore::metadata
 {
     class table_mgr
     {
-        public:
-            static constexpr int MAX_NAME = 16;
         private:
             std::unique_ptr<record::layout> m_tcat_layout;
             std::unique_ptr<record::layout> m_fcat_layout;
@@ -24,23 +22,24 @@ namespace dbcore::metadata
             table_mgr(bool is_new, tx::transaction&& tx)
             {
                 using namespace record;
+                using namespace detail;
                 schema tcat_schema;
-                tcat_schema.add_str_field(detail::tblname_field, MAX_NAME);
-                tcat_schema.add_int_field(detail::slotsize_field);
+                tcat_schema.add_str_field(tblname_field, MAX_NAME);
+                tcat_schema.add_int_field(slotsize_field);
                 m_tcat_layout = std::make_unique<layout>(tcat_schema);
 
                 schema fcat_schema;
-                fcat_schema.add_str_field(detail::tblname_field, MAX_NAME);
-                fcat_schema.add_str_field(detail::fldname_field, MAX_NAME);
-                fcat_schema.add_int_field(detail::type_field);
-                fcat_schema.add_int_field(detail::length_field);
-                fcat_schema.add_int_field(detail::offset_field);
+                fcat_schema.add_str_field(tblname_field, MAX_NAME);
+                fcat_schema.add_str_field(fldname_field, MAX_NAME);
+                fcat_schema.add_int_field(type_field);
+                fcat_schema.add_int_field(length_field);
+                fcat_schema.add_int_field(offset_field);
                 m_fcat_layout = std::make_unique<layout>(fcat_schema);
 
                 if (is_new)
                 {
-                    create_table(detail::table_catalog_tbl, tcat_schema, tx);
-                    create_table(detail::fields_catalog_tbl, fcat_schema, tx);
+                    create_table(table_catalog_tbl, tcat_schema, tx);
+                    create_table(fields_catalog_tbl, fcat_schema, tx);
                 }
             }
 

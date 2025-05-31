@@ -59,6 +59,7 @@ namespace dbcore::tx
             }
 
         public:
+            recovery_mgr() = default;
             recovery_mgr(transaction& tx, int tx_num, log_mgr::log_mgr& lm, buffer_mgr::buffer_mgr& bm)
                 : tx(tx), tx_num(tx_num), lm(lm), bm(bm)
             {

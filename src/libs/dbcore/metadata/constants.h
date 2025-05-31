@@ -5,6 +5,7 @@
 
 namespace dbcore::metadata::detail
 {
+    constexpr int MAX_NAME = 16;
     // table
     const std::string fields_catalog_tbl = "fldcat";
     const std::string table_catalog_tbl = "tblcat";
@@ -21,6 +22,11 @@ namespace dbcore::metadata::detail
 
     const std::string viewname_field = "viewname";
     const std::string viewdef_field = "viewdef";
+
+    //idnex
+    const std::string index_catalog_tbl = "idxcat";
+
+    const std::string idxname_field = "idxname";
 }
 
 #endif

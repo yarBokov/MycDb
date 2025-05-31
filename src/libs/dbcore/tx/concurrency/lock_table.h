@@ -42,6 +42,7 @@ namespace dbcore::tx
             }
 
         public:
+            lock_table() = default;
             void s_lock(const file_mgr::block_id& blk)
             {
                 std::unique_lock<std::mutex> lock(mtx);
