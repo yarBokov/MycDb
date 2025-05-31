@@ -46,3 +46,10 @@ function(str_weave target)
     str_chain("${target}" " " ${ARGN})  # Delegate with space
     set(${target} "${${target}}" PARENT_SCOPE)  # Sync
 endfunction()
+
+function(convert_to_target_name string_to_convert out_var)
+  set(out_string "${string_to_convert}")
+  string(TOLOWER "${out_string}" out_string)
+  string(REGEX REPLACE "[^a-z0-9\\:]" "-" out_string "${out_string}")
+  set(${out_var} "${out_string}" PARENT_SCOPE)
+endfunction()
