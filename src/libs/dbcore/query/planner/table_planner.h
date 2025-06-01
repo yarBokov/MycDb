@@ -112,7 +112,7 @@ namespace dbcore::query::optimization
             std::unique_ptr<query::plan::i_plan> construct_product_plan(query::plan::i_plan* curr)
             {
                 auto p = add_select_predicate(std::make_unique<query::plan::i_plan>(m_tbl_plan.release()));
-                return std::make_unique<multibuffer_product_plan>(m_tx, curr, p.release());
+                return std::make_unique<multibuffer_product_plan>(*m_tx, curr, p.release());
             }
     };
 }

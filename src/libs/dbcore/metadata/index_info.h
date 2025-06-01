@@ -5,7 +5,7 @@
 #include "libs/dbcore/record/schema.h"
 #include "libs/dbcore/record/layout.h"
 #include "libs/dbcore/tx/transaction.h"
-#include "libs/dbcore/indices/index_type.h"
+#include "libs/dbcore/index/index_type.h"
 
 namespace dbcore::metadata
 {

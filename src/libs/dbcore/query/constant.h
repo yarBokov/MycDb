@@ -16,6 +16,7 @@ namespace dbcore::query
             std::variant<int, std::string> m_value;
 
         public:
+            constant() = default;
             constant(int ival): m_value(ival) {}
             constant(const std::string& sval): m_value(sval) {}
             constant(std::string&& sval) noexcept : m_value(std::move(sval)) {}

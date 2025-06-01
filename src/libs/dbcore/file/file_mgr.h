@@ -30,7 +30,7 @@ namespace dbcore::file_mgr
             };
 
             std::unordered_map<std::string, std::unique_ptr<file_handler>> opened_files;
-            std::mutex opened_files_mtx;
+            mutable std::mutex opened_files_mtx;
 
             inline file_handler& get_file_handler(const std::string& filename)
             {

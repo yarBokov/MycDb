@@ -1,0 +1,90 @@
+#ifndef __DBCORE_HPP
+#define __DBCORE_HPP
+
+#include "detail/check_int_alignment.h"
+
+#include "exceptions/bad_syntax_exception.h"
+#include "exceptions/buffer_abort_exception.h"
+#include "exceptions/lock_abort_exception.h"
+#include "exceptions/query_constant_variant_exception.h"
+
+#include "file/page/block_id.h"
+#include "file/page/page.h"
+#include "file/file_mgr.h"
+
+#include "buffer/buffer.h"
+#include "buffer/buffer_mgr.h"
+
+#include "log/log_iterator.h"
+#include "log/log_mgr.h"
+
+#include "tx/concurrency/concurrency_mgr.h"
+#include "tx/concurrency/lock_table.h"
+#include "tx/recovery/checkpoint_record.h"
+#include "tx/recovery/commit_record.h"
+#include "tx/recovery/log_record.h"
+#include "tx/recovery/recovery_mgr.h"
+#include "tx/recovery/rollback_record.h"
+#include "tx/recovery/set_int_record.h"
+#include "tx/recovery/set_str_record.h"
+#include "tx/recovery/start_record.h"
+#include "tx/log_ops.h"
+#include "tx/buffer_list.h"
+#include "tx/isolation_levels.h"
+#include "tx/transaction.h"
+
+#include "record/layout.h"
+#include "record/record_id.h"
+#include "record/record_page.h"
+#include "record/schema.h"
+#include "record/table_scan.h"
+
+#include "scan/i_scan.h"
+#include "scan/i_update_scan.h"
+#include "scan/product_scan.h"
+#include "scan/project_scan.h"
+#include "scan/select_scan.h"
+
+#include "metadata/constants.h"
+#include "metadata/index_info.h"
+#include "metadata/index_mgr.h"
+#include "metadata/metadata_mgr.h"
+#include "metadata/stat_info.h"
+#include "metadata/stat_mgr.h"
+#include "metadata/table_mgr.h"
+#include "metadata/view_mgr.h"
+
+#include "parse/ops_data/create_table_data.h"
+#include "parse/ops_data/create_index_data.h"
+#include "parse/ops_data/create_view_data.h"
+#include "parse/ops_data/delete_data.h"
+#include "parse/ops_data/insert_data.h"
+#include "parse/ops_data/modify_data.h"
+#include "parse/ops_data/query_data.h"
+#include "parse/lexer.hpp"
+#include "parse/parser.hpp"
+#include "parse/pred_parser.hpp"
+
+#include "query/constant.h"
+#include "query/expression.h"
+#include "query/predicate.h"
+#include "query/term.h"
+#include "query/plan/i_plan.h"
+#include "query/plan/product_plan.h"
+#include "query/plan/project_plan.h"
+#include "query/plan/select_plan.h"
+#include "query/plan/table_plan.h"
+#include "query/planner/i_query_planner.h"
+#include "query/planner/i_update_planner.h"
+#include "query/planner/heuristic_query_planner.h"
+#include "query/planner/basic_update_planner.h"
+#include "query/planner/table_planner.h"
+#include "query/planner/planner.hpp"
+
+// Index
+#include "index/index_type.h"
+#include "index/i_index.h"
+#include "index/hash/hash_index.hpp"
+#include "index/bitmap/bitmap_index.hpp"
+
+#endif

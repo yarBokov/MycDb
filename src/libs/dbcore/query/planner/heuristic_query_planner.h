@@ -95,11 +95,12 @@ namespace dbcore::query::optimization
                 : m_mdm(mdm)
             {}
 
-            std::unique_ptr<i_plan> create_plan(const parse::query_data& data, std::shared_ptr<tx::transaction> tx)
+            std::unique_ptr<i_plan> create_plan(parse::query_data& data, tx::transaction& tx) override
             {
                 for (const auto& tblname : data.tables())
                 {
-                    m_table_planners.push_back(std::make_unique<table_planner>(tblname, data.predicate(), tx, m_mdm));
+                    m_table_planners.push_back(std::make_unique<table_planner>(tblname, data.predicate(), 
+                        std::make_shared<tx::transaction>(tx), m_mdm));
                 }
 
                 auto curr_plan = get_select_plan();

@@ -11,6 +11,7 @@
 #include "lexer.hpp"
 
 #include <memory>
+#include <variant>
 
 namespace dbcore::parse
 {
@@ -22,34 +23,34 @@ namespace dbcore::parse
             std::vector<std::string> select_list();
             std::vector<std::string> table_list();
             std::vector<std::string> field_list();
-            std::vector<std::shared_ptr < query::constant > > const_list();
-
-            std::shared_ptr<void> create();
+            std::vector<query::constant> const_list();
 
             record::schema field_defs();
             record::schema field_def();
             record::schema field_type(const std::string& fldname);
 
         public:
-            parser();
+            using update_cmd_parse_result = std::variant<insert_data, delete_data, modify_data, 
+                create_table_data, create_view_data, create_index_data>;
 
+            parser();
             void analyze(const std::string& str);
 
             std::string get_field();
-            std::shared_ptr<query::constant> constant();
+            query::constant constant();
             std::shared_ptr<query::expression> expression();
             std::shared_ptr<query::term> term();
             std::shared_ptr<query::predicate> predicate();
             
             std::shared_ptr<query_data> query();
             
-            std::shared_ptr<void> update_cmd();  
-            std::shared_ptr<delete_data> delete_cmd();
-            std::shared_ptr<insert_data> insert();
-            std::shared_ptr<modify_data> modify();
-            std::shared_ptr<create_table_data> create_table();
-            std::shared_ptr<create_view_data> create_view();
-            std::shared_ptr<create_index_data> create_index();
+            update_cmd_parse_result update_cmd();
+            delete_data delete_cmd();
+            insert_data insert();
+            modify_data modify();
+            create_table_data create_table();
+            create_view_data create_view();
+            create_index_data create_index();
     };
 }
 

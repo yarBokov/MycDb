@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.18)
 
-project(mycelliaDB 
+project(mycdb 
         LANGUAGES C CXX
         DESCRIPTION "Mycellia Database Prototype")
 

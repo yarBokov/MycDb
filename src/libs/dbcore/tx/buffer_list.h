@@ -20,7 +20,7 @@ namespace dbcore::tx
             buffer_mgr::buffer_mgr& bm;
 
         public:
-            buffer_list() =default;
+            buffer_list() = default;
             buffer_list(buffer_mgr::buffer_mgr& bm)
                 : bm(bm)
             {}

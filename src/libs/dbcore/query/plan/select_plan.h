@@ -2,6 +2,7 @@
 #define __QUERY_SELECT_PLAN_H
 
 #include "i_plan.h"
+#include "table_plan.h"
 
 #include "libs/dbcore/query/predicate.h"
 #include "libs/dbcore/scan/select_scan.h"
@@ -17,7 +18,7 @@ namespace dbcore::query::plan
             query::predicate m_pred;
 
         public:
-            explicit select_plan(std::unique_ptr<i_plan> plan, const query::predicate& pred)
+            select_plan(std::unique_ptr<i_plan> plan, const query::predicate& pred)
                 : m_plan(std::move(plan)), m_pred(pred)
             {}
 

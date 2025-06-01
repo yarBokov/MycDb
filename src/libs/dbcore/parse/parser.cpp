@@ -1,5 +1,7 @@
 #include "parser.hpp"
 
+#include <variant>
+
 namespace dbcore::parse
 {
     parser::parser()
@@ -50,9 +52,9 @@ namespace dbcore::parse
         return l;
     }
 
-    std::vector<std::shared_ptr < query::constant > > parser::const_list()
+    std::vector<query::constant> parser::const_list()
     {
-        std::vector < std::shared_ptr<query::constant> > l;
+        std::vector < query::constant > l;
         l.push_back(constant()); 
         if (m_lexer.match_delimeter(','))
         {
@@ -61,17 +63,6 @@ namespace dbcore::parse
             l.insert(l.end(), rest.begin(), rest.end());
         }
         return l;
-    }
-
-    std::shared_ptr<void> parser::create()
-    {
-        m_lexer.consume_keyword("create");
-        if (m_lexer.match_keyword("table"))
-            return create_table();
-        else if (m_lexer.match_keyword("view"))
-            return create_view();
-        else 
-            return create_index();
     }
 
     record::schema parser::field_defs()
@@ -116,12 +107,12 @@ namespace dbcore::parse
         return m_lexer.consume_id();
     }
 
-    std::shared_ptr<query::constant> parser::constant()
+    query::constant parser::constant()
     {
         if (m_lexer.match_str_constant())
-            return std::make_shared<query::constant>(m_lexer.consume_str_constant());
+            return query::constant(m_lexer.consume_str_constant());
         else
-            return std::make_shared<query::constant>(m_lexer.consume_int_constant());
+            return query::constant(m_lexer.consume_int_constant());
     }
 
     std::shared_ptr<query::expression> parser::expression()
@@ -166,7 +157,7 @@ namespace dbcore::parse
         return std::make_shared<query_data>(fields, tables, *pred);
     }
     
-    std::shared_ptr<void> parser::update_cmd()
+    parser::update_cmd_parse_result parser::update_cmd()
     {
         if (m_lexer.match_keyword("insert"))
             return insert();
@@ -175,10 +166,18 @@ namespace dbcore::parse
         else if (m_lexer.match_keyword("update"))
             return modify();
         else
-            create();
+        {
+            m_lexer.consume_keyword("create");
+            if (m_lexer.match_keyword("table"))
+                return create_table();
+            else if (m_lexer.match_keyword("view"))
+                return create_view();
+            else 
+                return create_index();
+        }
     }
 
-    std::shared_ptr<delete_data> parser::delete_cmd()
+    delete_data parser::delete_cmd()
     {
         m_lexer.consume_keyword("delete");
         m_lexer.consume_keyword("from");
@@ -189,10 +188,10 @@ namespace dbcore::parse
             m_lexer.consume_keyword("where");
             pred = predicate();
         }
-        return std::make_shared<delete_data>(tblname, *pred);
+        return delete_data(tblname, *pred);
     }
 
-    std::shared_ptr<insert_data> parser::insert()
+    insert_data parser::insert()
     {
         m_lexer.consume_keyword("insert");
         m_lexer.consume_keyword("into");
@@ -204,10 +203,10 @@ namespace dbcore::parse
         m_lexer.consume_delimeter('(');
         auto vals = const_list();
         m_lexer.consume_delimeter(')');
-        return std::make_shared<insert_data>(tblname, fields, vals);
+        return insert_data(tblname, fields, vals);
     }
 
-    std::shared_ptr<modify_data> parser::modify()
+    modify_data parser::modify()
     {
         m_lexer.consume_keyword("update");
         std::string tblname = m_lexer.consume_id();
@@ -221,29 +220,29 @@ namespace dbcore::parse
             m_lexer.consume_keyword("where");
             pred = predicate();
         }
-        return std::make_shared<modify_data>(tblname, fldname, *newval, *pred);
+        return modify_data(tblname, fldname, *newval, *pred);
     }
 
-    std::shared_ptr<create_table_data> parser::create_table()
+    create_table_data parser::create_table()
     {
         m_lexer.consume_keyword("table");
         std::string tblname = m_lexer.consume_id();
         m_lexer.consume_delimeter('(');
         auto sch = field_defs();
         m_lexer.consume_delimeter(')');
-        return std::make_shared<create_table_data>(tblname, sch);
+        return create_table_data(tblname, sch);
     }
 
-    std::shared_ptr<create_view_data> parser::create_view()
+    create_view_data parser::create_view()
     {
         m_lexer.consume_keyword("view");
         std::string viewname = m_lexer.consume_id();
         m_lexer.consume_keyword("as");
         auto qd = query();
-        return std::make_shared<create_view_data>(viewname, *qd);
+        return create_view_data(viewname, *qd);
     }
 
-    std::shared_ptr<create_index_data> parser::create_index()
+    create_index_data parser::create_index()
     {
         m_lexer.consume_keyword("index");
         std::string idxname = m_lexer.consume_id();
@@ -252,6 +251,6 @@ namespace dbcore::parse
         m_lexer.consume_delimeter('(');
         std::string fldname = get_field();
         m_lexer.consume_delimeter(')');
-        return std::make_shared<create_index_data>(idxname, tblname, fldname);
+        return create_index_data(idxname, tblname, fldname);
     }
 }

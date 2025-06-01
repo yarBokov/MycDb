@@ -84,6 +84,8 @@
         "numbers": "cpp",
         "scoped_allocator": "cpp",
         "valarray": "cpp",
-        "*.inc": "cpp"
+        "*.inc": "cpp",
+        "buffer": "cpp",
+        "netfwd": "cpp"
     }
 }

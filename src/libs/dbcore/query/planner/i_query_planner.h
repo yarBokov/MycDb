@@ -12,7 +12,7 @@ namespace dbcore::query
     class i_query_planner
     {
         public:
-            virtual std::unique_ptr<plan::i_plan> create_plan(const parse::query_data& data, tx::transaction& tx);
+            virtual std::unique_ptr<plan::i_plan> create_plan(parse::query_data& data, tx::transaction& tx);
     };
 }
 

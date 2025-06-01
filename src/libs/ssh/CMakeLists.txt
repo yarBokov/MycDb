@@ -1,9 +1,9 @@
-# decode_module_path(
-#   ${CMAKE_CURRENT_LIST_DIR}
-#   LIB_NAME      lib_name
-#   BASE_PREFIX   base_prefix
-#   TARGET_NAME   target_name
-#   TARGET_ALIAS  target_alias)
+decode_target_path(
+  ${CMAKE_CURRENT_LIST_DIR}
+  LIB_NAME      lib_name
+  BASE_PREFIX   base_prefix
+  TARGET_NAME   target_name
+  TARGET_ALIAS  target_alias)
 
 set(sources_list
     exceptions.h
