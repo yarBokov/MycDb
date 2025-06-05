@@ -62,6 +62,23 @@ namespace dbcore::query
                 }, m_value);
             }
 
+            int hash_code() const
+            {
+                return std::visit([](auto&& arg) -> int{
+                    using Type = std::decay_t<decltype(arg)>;
+                    if constexpr (std::is_same_v<Type, int>)
+                        return arg;
+                    else if constexpr (std::is_same_v<Type, std::string>)
+                    {
+                        int hash = 0;
+                        for (char ch : arg)
+                            hash = 31 * hash + ch;
+                            
+                        return hash;
+                    }
+                }, m_value);
+            }
+
             struct hash
             {
                 std::size_t operator()(const constant& c)

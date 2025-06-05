@@ -98,6 +98,34 @@ function(decode_module_path MOD_DIR)
     endforeach()
 endfunction()
 
+function(get_local_sources OUT_VAR)
+    set(options ALL SOURCES HEADERS)
+    cmake_parse_arguments(ARG "${options}" "" "" ${ARGN})
+    
+    if(NOT ARG_SOURCES AND NOT ARG_HEADERS)
+        set(ARG_ALL TRUE)
+    endif()
+
+    set(BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
+
+    set(RESULT_FILES)
+    
+    if(ARG_ALL OR ARG_SOURCES)
+        file(GLOB_RECURSE CPP_FILES "${BASE_DIR}/*.cpp")
+        list(APPEND RESULT_FILES ${CPP_FILES})
+    endif()
+
+    if(ARG_ALL OR ARG_HEADERS)
+        file(GLOB_RECURSE H_FILES
+            "${BASE_DIR}/*.h"
+            "${BASE_DIR}/*.hpp"
+        )
+        list(APPEND RESULT_FILES ${H_FILES})
+    endif()
+
+    set(${OUT_VAR} ${RESULT_FILES} PARENT_SCOPE)
+endfunction()
+
 function(add_lib sources target_name target_alias)
     if(STATIC)
         set(lib_type STATIC)

@@ -10,8 +10,8 @@ namespace dbcore::scan
     class product_scan : public i_scan
     {
         private:
-            std::unique_ptr<i_scan> m_left_scan;
-            std::unique_ptr<i_scan> m_right_scan;
+            std::shared_ptr<i_scan> m_left_scan;
+            std::shared_ptr<i_scan> m_right_scan;
 
         public:
             void before_first() override
@@ -32,8 +32,8 @@ namespace dbcore::scan
                 }
             }
 
-            product_scan(std::unique_ptr<i_scan> lhs_scan, std::unique_ptr<i_scan> rhs_scan)
-                : m_left_scan(std::move(lhs_scan)), m_right_scan(std::move(rhs_scan))
+            product_scan(std::shared_ptr<i_scan> lhs_scan, std::shared_ptr<i_scan> rhs_scan)
+                : m_left_scan(lhs_scan), m_right_scan(rhs_scan)
             {
                 before_first();
             }

@@ -95,7 +95,7 @@ namespace dbcore::query::optimization
                 : m_mdm(mdm)
             {}
 
-            std::unique_ptr<i_plan> create_plan(parse::query_data& data, tx::transaction& tx) override
+            std::shared_ptr<i_plan> create_plan(parse::query_data& data, tx::transaction& tx) override
             {
                 for (const auto& tblname : data.tables())
                 {
@@ -114,7 +114,7 @@ namespace dbcore::query::optimization
                         curr_plan = get_product_plan(std::move(curr_plan));
                 }
 
-                return std::make_unique<project_plan>(std::move(curr_plan), data.fields());
+                return std::make_shared<project_plan>(std::move(curr_plan), data.fields());
             }
     };
 }

@@ -36,7 +36,7 @@ namespace dbcore::record
             layout m_layout;
             std::string m_filename;
             std::unique_ptr<record_page> m_rec_page;
-            int m_cur_slot;
+            int m_curr_slot;
  
             void move_to_block(int blk_num);
             void move_to_new_block();

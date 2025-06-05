@@ -38,11 +38,11 @@ namespace dbcore::query::plan
                 m_sch.add_all(m_plan_rhs->schema());
             }
 
-            std::unique_ptr<scan::i_scan> open() override
+            std::shared_ptr<scan::i_scan> open() override
             {
                 auto s_lhs = m_plan_lhs->open();
                 auto s_rhs = m_plan_rhs->open();
-                return std::make_unique<scan::product_scan>(s_lhs, s_rhs);
+                return std::make_shared<scan::product_scan>(s_lhs, s_rhs);
             }
 
             std::size_t blocks_accessed() const override

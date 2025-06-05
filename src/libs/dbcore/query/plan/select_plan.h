@@ -22,10 +22,10 @@ namespace dbcore::query::plan
                 : m_plan(std::move(plan)), m_pred(pred)
             {}
 
-            std::unique_ptr<scan::i_scan> open() override
+            std::shared_ptr<scan::i_scan> open() override
             {
                 auto s = m_plan->open();
-                return std::make_unique<scan::select_scan>(s, m_pred);
+                return std::make_shared<scan::select_scan>(s, m_pred);
             }
 
             std::size_t blocks_accessed() const override

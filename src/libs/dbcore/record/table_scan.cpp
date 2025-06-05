@@ -4,7 +4,7 @@
 namespace dbcore::record
 {
     table_scan::table_scan(tx::transaction& tx, const std::string& table, const layout& layout)
-        : m_tx(tx), m_layout(layout), m_filename(table + config::table_ext), m_cur_slot(-1)
+        : m_tx(tx), m_layout(layout), m_filename(table + config::table_ext), m_curr_slot(-1)
     {
         if (m_tx.size(m_filename) == 0)
             move_to_new_block();
@@ -20,25 +20,25 @@ namespace dbcore::record
 
     bool table_scan::next()
     {
-        m_cur_slot = m_rec_page->next_after(m_cur_slot);
-        while (m_cur_slot < 0)
+        m_curr_slot = m_rec_page->next_after(m_curr_slot);
+        while (m_curr_slot < 0)
         {
             if (at_last_block())
                 return false;
             move_to_block(m_rec_page->block().get_block_number() + 1);
-            m_cur_slot = m_rec_page->next_after(m_cur_slot);
+            m_curr_slot = m_rec_page->next_after(m_curr_slot);
         }
         return true;
     }
 
     int table_scan::get_int(const std::string& fldname)
     {
-        return m_rec_page->get_int(m_cur_slot, fldname);
+        return m_rec_page->get_int(m_curr_slot, fldname);
     }
 
     std::string table_scan::get_str(const std::string& fldname)
     {
-        return m_rec_page->get_str(m_cur_slot, fldname);
+        return m_rec_page->get_str(m_curr_slot, fldname);
     }
 
     query::constant table_scan::get_val(const std::string& fldname)
@@ -74,35 +74,35 @@ namespace dbcore::record
 
     void table_scan::set_int(const std::string& fldname, int value)
     {
-        m_rec_page->set_int(m_cur_slot, fldname, value);
+        m_rec_page->set_int(m_curr_slot, fldname, value);
     }
 
     void table_scan::set_str(const std::string& fldname, const std::string& value)
     {
-        m_rec_page->set_str(m_cur_slot, fldname, value);
+        m_rec_page->set_str(m_curr_slot, fldname, value);
     }
 
     void table_scan::insert()
     {
-        m_cur_slot = m_rec_page->insert_after(m_cur_slot);
-        while (m_cur_slot < 0)
+        m_curr_slot = m_rec_page->insert_after(m_curr_slot);
+        while (m_curr_slot < 0)
         {
             if (at_last_block())
                 move_to_new_block();
             else
                 move_to_block(m_rec_page->block().get_block_number() + 1);
-            m_cur_slot = m_rec_page->insert_after(m_cur_slot);
+            m_curr_slot = m_rec_page->insert_after(m_curr_slot);
         }
     }
 
     void table_scan::delete_record()
     {
-        m_rec_page->delete_record(m_cur_slot);
+        m_rec_page->delete_record(m_curr_slot);
     }
 
     record::record_id table_scan::get_rid()
     {
-        return record_id(m_rec_page->block().get_block_number(), m_cur_slot);
+        return record_id(m_rec_page->block().get_block_number(), m_curr_slot);
     }
 
     void table_scan::move_to_rid(const record::record_id& rid)
@@ -110,7 +110,7 @@ namespace dbcore::record
         close();
         block_id blk(m_filename, rid.block_number());
         m_rec_page = std::make_unique<record_page>(m_tx, blk, m_layout);
-        m_cur_slot = rid.slot(); 
+        m_curr_slot = rid.slot(); 
     }
 
     void table_scan::move_to_block(int blk_num)
@@ -118,7 +118,7 @@ namespace dbcore::record
         close();
         block_id blk(m_filename, blk_num);
         m_rec_page = std::make_unique<record_page>(m_tx, blk, m_layout);
-        m_cur_slot = -1;
+        m_curr_slot = -1;
     }
 
     void table_scan::move_to_new_block()
@@ -127,7 +127,7 @@ namespace dbcore::record
         auto blk = m_tx.append(m_filename);
         m_rec_page = std::make_unique<record_page>(m_tx, *blk, m_layout);
         m_rec_page->format();
-        m_cur_slot = -1;
+        m_curr_slot = -1;
     }
 
     bool table_scan::at_last_block() const

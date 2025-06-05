@@ -9,6 +9,8 @@ namespace dbcore::index
         bitmap_index,
         binarytree_index
     };
+
+
 }
 
 #endif

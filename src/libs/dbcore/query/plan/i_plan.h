@@ -11,7 +11,7 @@ namespace dbcore::query::plan
     class i_plan
     {
         public:
-            virtual std::unique_ptr<scan::i_scan> open() = 0;
+            virtual std::shared_ptr<scan::i_scan> open() = 0;
             virtual std::size_t blocks_accessed() const = 0;
             virtual std::size_t records() const = 0;
             virtual std::size_t distinct_values(const std::string& fldname) const = 0;

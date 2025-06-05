@@ -30,7 +30,7 @@ namespace dbcore::index
             void delete_record(const query::constant& dataval, const record::record_id& datarid) override;
             void close() override;
 
-            static int search_cost(int numblocks, int rpb);
+            static std::size_t search_cost(int numblocks, int rpb);
             void set_buckets_num(std::size_t buckets_num);
     };
 }

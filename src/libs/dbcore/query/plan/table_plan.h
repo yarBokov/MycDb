@@ -27,9 +27,9 @@ namespace dbcore::query::plan
                 , m_stat(*md.get_stat_info(m_tblname, m_layout, tx))
             {}
 
-            std::unique_ptr<scan::i_scan> open() override
+            std::shared_ptr<scan::i_scan> open() override
             {
-                return std::make_unique<record::table_scan>(m_tx, m_tblname, m_layout);
+                return std::make_shared<record::table_scan>(m_tx, m_tblname, m_layout);
             }
 
             std::size_t blocks_accessed() const override

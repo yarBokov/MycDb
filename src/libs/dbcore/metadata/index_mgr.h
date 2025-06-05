@@ -38,7 +38,7 @@ namespace dbcore::metadata
 
             std::unordered_map<std::string, index_info> get_index_info(const std::string& tblname, tx::transaction& tx)
             {
-                record::table_scan ts(tx, detail::index_catalog_tbl,*m_idxcat_layout);
+                record::table_scan ts(tx, detail::index_catalog_tbl, *m_idxcat_layout);
                 std::unordered_map<std::string, index_info> result;
                 while (ts.next())
                 {

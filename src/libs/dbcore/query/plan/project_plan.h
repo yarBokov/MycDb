@@ -23,10 +23,10 @@ namespace dbcore::query::plan
                     m_sch.add(fldname, m_plan->schema());
             }
 
-            std::unique_ptr<scan::i_scan> open() override
+            std::shared_ptr<scan::i_scan> open() override
             {
                 auto s = m_plan->open();
-                return std::make_unique<scan::project_scan>(s, m_sch.fields());
+                return std::make_shared<scan::project_scan>(s, m_sch.fields());
             }
 
             std::size_t blocks_accessed() const override

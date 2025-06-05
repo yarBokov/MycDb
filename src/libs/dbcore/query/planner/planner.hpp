@@ -23,7 +23,7 @@ namespace dbcore::query
                 , m_parser(std::move(parser))
             {}
 
-            std::unique_ptr<plan::i_plan> create_query_plan(std::string query, tx::transaction& tx)
+            std::shared_ptr<plan::i_plan> create_query_plan(std::string query, tx::transaction& tx)
             {
                 m_parser->analyze(query);
                 auto data = m_parser->query();

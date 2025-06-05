@@ -47,7 +47,7 @@ namespace dbcore::metadata
                 m_idx_layout = create_index_layout();
             }
 
-            void open() //TODO: Change return type when index class will be ready
+            std::shared_ptr<index::i_index> open() //TODO: Change return type when index class will be ready
             {
                 return ;
                 // return new btree_index();

@@ -7,6 +7,9 @@
 #include "libs/dbcore/query/predicate.h"
 #include "libs/dbcore/metadata/index_info.h"
 #include "libs/dbcore/metadata/metadata_mgr.h"
+#include "libs/dbcore/index/planners/index_join_plan.h"
+#include "libs/dbcore/index/planners/index_select_plan.h"
+#include "libs/dbcore/multibuffer/multibuffer_product_plan.h"
 
 #include <unordered_map>
 #include <optional>
@@ -16,7 +19,7 @@ namespace dbcore::query::optimization
     class table_planner
     {
         private:
-            std::unique_ptr<query::plan::table_plan> m_tbl_plan;
+            std::shared_ptr<query::plan::table_plan> m_tbl_plan;
             predicate m_pred;
             record::schema m_sch;
             std::unordered_map<std::string, metadata::index_info> m_indexes;
@@ -30,9 +33,8 @@ namespace dbcore::query::optimization
                     if (val.as_int() != 0 && val.as_str() != "")
                     {
                         // std::cout << usd index on << fldname;
-                        return std::make_unique<index_select_plan>(
-                            std::unique_ptr<query::plan::i_plan>(), ii, val);
-                        );
+                        return std::make_unique<index::index_select_plan>(
+                            std::shared_ptr<query::plan::i_plan>(), ii, val);
                     }
                 }
                 return nullptr;
@@ -45,9 +47,8 @@ namespace dbcore::query::optimization
                     auto outer_field = m_pred.equates_with_field(fldname);
                     if (currsch.has_field(outer_field))
                     {
-                        auto p = std::make_unique<index_join_plan>(
-                            curr, std::unique_ptr<query::plan::i_plan>(m_tbl_plan.release()), ii, outer_field);
-                        p = add_select_predicate(std::move(p));
+                        auto p = add_select_predicate(std::make_unique<index::index_join_plan>(
+                            curr, std::shared_ptr<query::plan::i_plan>(m_tbl_plan.get()), ii, outer_field));
                         return add_join_predicate(std::move(p), currsch);
                     }
                 }
@@ -91,7 +92,7 @@ namespace dbcore::query::optimization
             {
                 auto p = construct_index_select();
                 if (!p)
-                    p = std::unique_ptr<query::plan::i_plan>(m_tbl_plan.release());
+                    p = std::unique_ptr<query::plan::i_plan>(m_tbl_plan.get());
                 return add_select_predicate(std::move(p));
             }
 
@@ -111,8 +112,8 @@ namespace dbcore::query::optimization
 
             std::unique_ptr<query::plan::i_plan> construct_product_plan(query::plan::i_plan* curr)
             {
-                auto p = add_select_predicate(std::make_unique<query::plan::i_plan>(m_tbl_plan.release()));
-                return std::make_unique<multibuffer_product_plan>(*m_tx, curr, p.release());
+                auto p = add_select_predicate(std::make_unique<query::plan::i_plan>(m_tbl_plan.get()));
+                return std::make_unique<multibuffer::multibuffer_product_plan>(m_tx, curr, p.release());
             }
     };
 }

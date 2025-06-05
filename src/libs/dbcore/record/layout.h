@@ -42,6 +42,13 @@ namespace dbcore::record
                 int slotsize)
                 : m_schema(schema), m_offsets(offsets), m_slotsize(slotsize)
             {}
+
+            layout& operator=(const layout& other)
+            {
+                m_schema = other.m_schema;
+                m_slotsize = other.m_slotsize;
+                m_offsets = other.m_offsets;
+            }
             
             schema& get_schema() const { return m_schema; }
             int offset(const std::string& fldname) const { return m_offsets.at(fldname); }

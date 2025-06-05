@@ -40,6 +40,11 @@ namespace dbcore::file_mgr
                 return oss.str();
             }
 
+            bool is_valid()
+            {
+                return blk_num > 0 && !filename.empty();
+            }
+
             struct hash
             {
                 std::size_t operator()(const block_id& blk) const

@@ -86,5 +86,21 @@
 #include "index/i_index.h"
 #include "index/hash/hash_index.hpp"
 #include "index/bitmap/bitmap_index.hpp"
+#include "index/btree/bt_dir.hpp"
+#include "index/btree/bt_leaf.hpp"
+#include "index/btree/bt_page.hpp"
+#include "index/btree/dir_entry.hpp"
+#include "index/btree/btree_index.hpp"
+#include "index/planners/index_join_plan.hpp"
+#include "index/planners/index_select_plan.hpp"
+#include "index/planners/index_update_planner.h"
+#include "index/scan/index_join_scan.h"
+#include "index/scan/index_select_scan.h"
+
+//multibuffer
+#include "multibuffer/buffer_needs.h"
+#include "multibuffer/chunk_scan.h"
+#include "multibuffer/multibuffer_product_plan.h"
+#include "multibuffer/multibuffer_product_scan.h"
 
 #endif
