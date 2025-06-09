@@ -12,7 +12,9 @@ namespace dbcore::index
             int m_blk_num;
 
         public:
-            dir_entry() = default;
+            dir_entry()
+                : m_blk_num(-1)
+            {}
 
             dir_entry(const query::constant& dataval, int blk_num)
                 : m_dataval(dataval), m_blk_num(blk_num)

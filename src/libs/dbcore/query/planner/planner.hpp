@@ -23,14 +23,14 @@ namespace dbcore::query
                 , m_parser(std::move(parser))
             {}
 
-            std::shared_ptr<plan::i_plan> create_query_plan(std::string query, tx::transaction& tx)
+            std::shared_ptr<plan::i_plan> create_query_plan(std::string query, std::shared_ptr<tx::transaction> tx)
             {
                 m_parser->analyze(query);
                 auto data = m_parser->query();
                 return m_qry_planner->create_plan(*data, tx);
             }
 
-            int execute_update(std::string command, tx::transaction& tx)
+            int execute_update(std::string command, std::shared_ptr<tx::transaction> tx)
             {
                 using namespace dbcore::parse;
                 m_parser->analyze(command);

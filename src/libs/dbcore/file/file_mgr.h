@@ -35,7 +35,7 @@ namespace dbcore::file_mgr
             inline file_handler& get_file_handler(const std::string& filename)
             {
                 {
-                    std::shared_lock<std::mutex> lock(opened_files_mtx);
+                    std::unique_lock<std::mutex> lock(opened_files_mtx);
                     auto it = opened_files.find(filename);
                     if (it != opened_files.end())
                         return *(it->second);

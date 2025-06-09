@@ -11,10 +11,10 @@ namespace dbcore::parse
     {
         private:
             std::string m_tblname;
-            record::schema m_sch;
+            std::shared_ptr<record::schema> m_sch;
 
         public:
-            create_table_data(const std::string& tblname, const record::schema& sch)
+            create_table_data(const std::string& tblname, std::shared_ptr<record::schema> sch)
                 : m_tblname(tblname), m_sch(sch)
             {}
 
@@ -23,7 +23,7 @@ namespace dbcore::parse
                 return m_tblname;
             }
 
-            record::schema new_schema() const
+            std::shared_ptr<record::schema> new_schema() const
             {
                 return m_sch;
             }

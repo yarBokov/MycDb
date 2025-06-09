@@ -3,10 +3,10 @@
 
 namespace dbcore::record
 {
-    table_scan::table_scan(tx::transaction& tx, const std::string& table, const layout& layout)
+    table_scan::table_scan(std::shared_ptr<tx::transaction> tx, const std::string& table, const layout& layout)
         : m_tx(tx), m_layout(layout), m_filename(table + config::table_ext), m_curr_slot(-1)
     {
-        if (m_tx.size(m_filename) == 0)
+        if (m_tx->size(m_filename) == 0)
             move_to_new_block();
         else
             move_to_block(0);
@@ -43,7 +43,7 @@ namespace dbcore::record
 
     query::constant table_scan::get_val(const std::string& fldname)
     {
-        if (m_layout.get_schema().type(fldname) == schema::sql_types::integer)
+        if (m_layout.get_schema()->type(fldname) == schema::sql_types::integer)
             return query::constant(get_int(fldname));
         else
             return query::constant(get_str(fldname));
@@ -51,14 +51,14 @@ namespace dbcore::record
 
     bool table_scan::has_field(const std::string& fldname)
     {
-        return m_layout.get_schema().has_field(fldname);
+        return m_layout.get_schema()->has_field(fldname);
     }
 
     void table_scan::close()
     {
         if (m_rec_page)
         {
-            m_tx.unpin(m_rec_page->block());
+            m_tx->unpin(m_rec_page->block());
             m_rec_page.reset();
         }
     }
@@ -66,7 +66,7 @@ namespace dbcore::record
     // update_scan
     void table_scan::set_val(const std::string& fldname, const query::constant& value)
     {
-        if (m_layout.get_schema().type(fldname) == schema::sql_types::integer)
+        if (m_layout.get_schema()->type(fldname) == schema::sql_types::integer)
             set_int(fldname, value.as_int());
         else
             set_str(fldname, value.as_str());
@@ -124,7 +124,7 @@ namespace dbcore::record
     void table_scan::move_to_new_block()
     {
         close();
-        auto blk = m_tx.append(m_filename);
+        auto blk = m_tx->append(m_filename);
         m_rec_page = std::make_unique<record_page>(m_tx, *blk, m_layout);
         m_rec_page->format();
         m_curr_slot = -1;
@@ -132,6 +132,6 @@ namespace dbcore::record
 
     bool table_scan::at_last_block() const
     {
-        return m_rec_page->block().get_block_number() == m_tx.size(m_filename) - 1;
+        return m_rec_page->block().get_block_number() == m_tx->size(m_filename) - 1;
     }
 }

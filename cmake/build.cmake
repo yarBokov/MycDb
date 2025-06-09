@@ -1,33 +1,31 @@
 macro(initialize_path_system)
-    set(BASE_DIR ${CMAKE_SOURCE_DIR} PARENT_SCOPE)
+    set(BASE_DIR ${CMAKE_SOURCE_DIR})
 
-    if(DEFINED ENV{LIBS_DIR} AND EXISTS "$ENV{LIBS_DIR}")
-        set(MYC_EXT_LIBS_ROOT "$ENV{LIBS_DIR}" CACHE PATH 
-            "External dependencies location" FORCE)
+    if(NOT EXISTS "$ENV{LIBS_DIR}") 
+        set(LIBS_DIR "${BASE_DIR}/../aux_libs" CACHE PATH "External dependencies location")
     else()
-        set(MYC_EXT_LIBS_ROOT "${BASE_DIR}/../aux_libs" CACHE PATH 
-            "Default external dependencies location" FORCE)
+        set(LIBS_DIR "$ENV{LIBS_DIR}")
     endif()
     
     # Generated files configuration
-    set(MYC_GEN_DIR "${CMAKE_BINARY_DIR}/src" PARENT_SCOPE)
+    set(MYC_GEN_DIR "${CMAKE_BINARY_DIR}/src")
     
     # Output directories configuration
-    set(MYC_DIST_DIR "${BASE_DIR}/out" PARENT_SCOPE)
-    set(MYC_PACKAGE_DIR "${MYC_DIST_DIR}/pkg" PARENT_SCOPE)
+    set(MYC_DIST_DIR "${BASE_DIR}/out")
+    set(MYC_PACKAGE_DIR "${MYC_DIST_DIR}/pkg")
     
     # Artifacts distribution
-    set(MYC_ARCHIVE_OUTPUT "${MYC_DIST_DIR}/arch" PARENT_SCOPE)
-    set(MYC_LIBRARY_OUTPUT "${MYC_DIST_DIR}/lib" PARENT_SCOPE)
-    set(MYC_RUNTIME_OUTPUT "${MYC_DIST_DIR}/bin" PARENT_SCOPE)
-    set(MYC_TEST_OUTPUT "${MYC_DIST_DIR}/tests" PARENT_SCOPE)
+    set(MYC_ARCHIVE_OUTPUT "${MYC_DIST_DIR}/arch")
+    set(MYC_LIBRARY_OUTPUT "${MYC_DIST_DIR}/lib")
+    set(MYC_RUNTIME_OUTPUT "${MYC_DIST_DIR}/bin")
+    set(MYC_TEST_OUTPUT "${MYC_DIST_DIR}/tests")
 endmacro()
 
 macro(create_output_directories_configuration)
     # CMake output directories
-    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${MYC_ARCHIVE_OUTPUT} PARENT_SCOPE)
-    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${MYC_LIBRARY_OUTPUT} PARENT_SCOPE)
-    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${MYC_RUNTIME_OUTPUT} PARENT_SCOPE)
+    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${MYC_ARCHIVE_OUTPUT})
+    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${MYC_LIBRARY_OUTPUT})
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${MYC_RUNTIME_OUTPUT})
     
     # Make these directories
     file(MAKE_DIRECTORY ${MYC_ARCHIVE_OUTPUT})
@@ -59,10 +57,11 @@ macro(set_definitions)
         -Wnon-virtual-dtor
         -Wuseless-cast
         -Wconversion
-        -Wunused
+        -Wno-unused-parameter
+        -Wno-reorder
+        -Wno-deprecated-copy
         -Wstack-protector
         -Winline
-        -Wshadow
         -Wfloat-equal
         -Wold-style-cast)
 
@@ -108,14 +107,14 @@ macro(myc_setup_include_paths)
     )
 endmacro()
 
+set_definitions()
+
 initialize_path_system()
 
 create_output_directories_configuration()
 
-set_definitions()
-
 myc_setup_include_paths()
 
-if(NOT EXISTS "${MYC_EXT_LIBS_ROOT}")
-    message(WARNING "Third-party libraries directory not found: ${MYC_EXT_LIBS_ROOT}")
+if(NOT EXISTS "${LIBS_DIR}")
+    message(WARNING "Third-party libraries directory not found: ${LIBS_DIR}")
 endif()

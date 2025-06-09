@@ -6,7 +6,7 @@
 
 namespace dbcore::index
 {
-    class index_join_scan : scan::i_scan
+    class index_join_scan : public scan::i_scan
     {
         private:
             std::shared_ptr<scan::i_scan> m_lhs;

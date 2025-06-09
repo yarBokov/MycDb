@@ -13,20 +13,20 @@ namespace dbcore::query::plan
     {
         private:
             std::unique_ptr<i_plan> m_plan;
-            record::schema m_sch;
+            std::shared_ptr<record::schema> m_sch;
 
         public:
             explicit project_plan(std::unique_ptr<i_plan> plan, const std::vector<std::string>& fieldlist)
                 : m_plan(std::move(plan))
             {
                 for (const auto& fldname : fieldlist)
-                    m_sch.add(fldname, m_plan->schema());
+                    m_sch->add(fldname, *m_plan->schema());
             }
 
             std::shared_ptr<scan::i_scan> open() override
             {
                 auto s = m_plan->open();
-                return std::make_shared<scan::project_scan>(s, m_sch.fields());
+                return std::make_shared<scan::project_scan>(s, m_sch->fields());
             }
 
             std::size_t blocks_accessed() const override
@@ -44,7 +44,7 @@ namespace dbcore::query::plan
                 return m_plan->distinct_values(fldname);
             }
 
-            record::schema schema() override
+            std::shared_ptr<record::schema> schema() override
             {
                 return m_plan->schema();
             }

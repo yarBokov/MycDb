@@ -15,12 +15,12 @@ namespace dbcore::query::plan
     {
         private:
             std::string m_tblname;
-            tx::transaction& m_tx;
+            std::shared_ptr<tx::transaction> m_tx;
             record::layout m_layout;
             metadata::stat_info m_stat;
 
         public:
-            explicit table_plan(tx::transaction& tx, const std::string& tblname, metadata::metadata_mgr& md)
+            explicit table_plan(std::shared_ptr<tx::transaction> tx, const std::string& tblname, metadata::metadata_mgr& md)
                 : m_tx(tx)
                 , m_tblname(tblname)
                 , m_layout(*md.get_layout(m_tblname, tx))
@@ -47,7 +47,7 @@ namespace dbcore::query::plan
                 return m_stat.distinct_values(fldname);
             }
 
-            record::schema schema() override
+            std::shared_ptr<record::schema> schema() override
             {
                 return m_layout.get_schema();
             }

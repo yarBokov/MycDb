@@ -1,6 +1,6 @@
-set(SSL_BASE_DIR "${MYC_EXT_LIBS_ROOT}/openssl" CACHE PATH "Base directory for openssl installation")
-set(SSL_LIB_HINT "${SSL_BASE_DIR}/lib64" CACHE PATH "Library search path hint")
-set(SSL_INCLUDE_DIR "${SSL_BASE_DIR}/lib64/include" CACHE PATH "Include path hint")
+set(SSL_BASE_DIR "${LIBS_DIR}/openssl")
+set(SSL_LIB_HINT "${SSL_BASE_DIR}/lib64")
+set(SSL_INCLUDE_DIR "${SSL_BASE_DIR}/lib64/include")
 
 find_library(SSL_LIBRARIES NAMES ssl crypto ${SSL_LIB_HINT})
 

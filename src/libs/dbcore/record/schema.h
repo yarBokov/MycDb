@@ -16,9 +16,6 @@ namespace dbcore::record
                 integer = 4,
                 varchar = 12
             };
-
-            //static const int INTEGER = 4;  // SQL INTEGER type
-            //static const int VARCHAR = 12; // SQL VARCHAR type
     
         private:
             struct field_info;
@@ -35,6 +32,28 @@ namespace dbcore::record
 
         public:
             schema() = default;
+
+            schema(const schema& other)
+            {
+                for (const auto& fldname : other.m_fields) {
+                    auto& info = other.m_info.at(fldname);
+                    this->add_field(fldname, info->type, info->length);
+                }
+            }
+
+            schema& operator=(const schema& other)
+            {
+                if (this != &other) {
+                    m_fields.clear();
+                    m_info.clear();
+                    for (const auto& fldname : other.m_fields) {
+                        auto& info = other.m_info.at(fldname);
+                        this->add_field(fldname, info->type, info->length);
+                    }
+                }
+                return *this;
+            }
+            
             void add_field(const std::string& fldname, sql_types type, int length)
             {
                 m_fields.push_back(fldname);
@@ -58,9 +77,24 @@ namespace dbcore::record
                 add_field(fldname, type, length);
             }
 
+            void add(const std::string& fldname, std::shared_ptr<schema> sch)
+            {
+                sql_types type = sch->type(fldname);
+                int length = sch->length(fldname);
+                add_field(fldname, type, length);
+            }
+
             void add_all(const schema& sch)
             {
                 for (const std::string& fldname : sch.fields()) 
+                {
+                    add(fldname, sch);
+                }
+            }
+
+            void add_all(std::shared_ptr<schema> sch)
+            {
+                for (const std::string& fldname : sch->fields()) 
                 {
                     add(fldname, sch);
                 }

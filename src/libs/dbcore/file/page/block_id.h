@@ -13,9 +13,9 @@ namespace dbcore::file_mgr
             int blk_num;
 
         public:
-            block_id() : blk_num(0), filename("") {}
+            block_id() : filename(""), blk_num(0) {}
             explicit block_id(const std::string& new_filename, int new_blk_num)
-                : filename(new_filename), blk_num(new_blk_num)
+                :  blk_num(new_blk_num), filename(new_filename)
             {}
 
             std::string get_filename() const

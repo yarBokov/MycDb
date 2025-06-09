@@ -21,7 +21,7 @@ namespace dbcore::metadata
             std::unique_ptr<stat_mgr> m_stat_mgr;
 
         public:
-            index_mgr(bool is_new, std::unique_ptr<table_mgr> tbl_mgr, std::unique_ptr<stat_mgr> stat_mgr, tx::transaction& tx)
+            index_mgr(bool is_new, std::unique_ptr<table_mgr> tbl_mgr, std::unique_ptr<stat_mgr> stat_mgr, std::shared_ptr<tx::transaction> tx)
                 : m_tbl_mgr(std::move(tbl_mgr)), m_stat_mgr(std::move(stat_mgr))
             {
                 using namespace detail;
@@ -36,7 +36,7 @@ namespace dbcore::metadata
                 m_idxcat_layout = m_tbl_mgr->get_layout(index_catalog_tbl, tx);
             }
 
-            std::unordered_map<std::string, index_info> get_index_info(const std::string& tblname, tx::transaction& tx)
+            std::unordered_map<std::string, index_info> get_index_info(const std::string& tblname, std::shared_ptr<tx::transaction> tx, index::index_type idx_type)
             {
                 record::table_scan ts(tx, detail::index_catalog_tbl, *m_idxcat_layout);
                 std::unordered_map<std::string, index_info> result;
@@ -48,8 +48,7 @@ namespace dbcore::metadata
                         std::string fldname = ts.get_str(detail::fldname_field);
                         auto tbl_layout = m_tbl_mgr->get_layout(tblname, tx);
                         auto tbl_stats = m_stat_mgr->get_stat_info(tblname, *tbl_layout, tx);
-                        index_info idx_info(idxname, fldname, 
-                            std::make_unique<record::schema>(tbl_layout->get_schema()), tx, *tbl_stats);
+                        index_info idx_info(idxname, fldname, tbl_layout->get_schema(), tx, *tbl_stats, idx_type);
                         result.insert_or_assign(fldname, idx_info);
                     }
                 }
@@ -57,7 +56,7 @@ namespace dbcore::metadata
                 return result;
             }
 
-            void create_index(const std::string& idxname, const std::string& tblname, const std::string& fldname, tx::transaction& tx)
+            void create_index(const std::string& idxname, const std::string& tblname, const std::string& fldname, std::shared_ptr<tx::transaction> tx)
             {
                 record::table_scan ts(tx, detail::index_catalog_tbl, *m_idxcat_layout);
                 ts.insert();

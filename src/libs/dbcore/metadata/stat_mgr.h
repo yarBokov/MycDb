@@ -18,7 +18,7 @@ namespace dbcore::metadata
             int m_num_calls;
 
             std::shared_ptr<stat_info> calculate_table_stats(
-                const std::string& tbl_name, const record::layout& layout, tx::transaction& tx)
+                const std::string& tbl_name, const record::layout& layout, std::shared_ptr<tx::transaction> tx)
             {
                 int num_recs = 0;
                 int num_blocks = 0;
@@ -33,7 +33,7 @@ namespace dbcore::metadata
                 return std::make_shared<stat_info>(num_blocks, num_recs);
             }
 
-            void refresh_statistics(tx::transaction& tx)
+            void refresh_statistics(std::shared_ptr<tx::transaction> tx)
             {
                 m_tbl_stats.clear();
                 m_num_calls = 0;
@@ -50,14 +50,14 @@ namespace dbcore::metadata
             }
 
         public:
-            stat_mgr(table_mgr& tbl_mgr, tx::transaction& tx)
+            stat_mgr(table_mgr& tbl_mgr, std::shared_ptr<tx::transaction> tx)
                 : m_tbl_mgr(tbl_mgr), m_num_calls(0), m_num_calls_limit(100)
             {
                 refresh_statistics(tx);
             }
 
             std::shared_ptr<stat_info> stat_mgr::get_stat_info(
-                const std::string& tbl_name, const record::layout& layout, tx::transaction& tx)
+                const std::string& tbl_name, const record::layout& layout, std::shared_ptr<tx::transaction> tx)
             {
                 m_num_calls++;
                 if (m_num_calls > m_num_calls_limit)

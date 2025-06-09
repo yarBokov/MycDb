@@ -12,14 +12,17 @@ namespace dbcore::metadata
 {
     class table_mgr
     {
+        public:
+            static const int MAX_NAME = 16;
+
         private:
             std::unique_ptr<record::layout> m_tcat_layout;
             std::unique_ptr<record::layout> m_fcat_layout;
             
-            void create_catalog_tables(bool isNew, tx::transaction& tx);
+            void create_catalog_tables(bool isNew, std::shared_ptr<tx::transaction> tx);
 
         public:
-            table_mgr(bool is_new, tx::transaction&& tx)
+            table_mgr(bool is_new, std::shared_ptr<tx::transaction> tx)
             {
                 using namespace record;
                 using namespace detail;
@@ -43,7 +46,7 @@ namespace dbcore::metadata
                 }
             }
 
-            void create_table(const std::string& tblname, record::schema& sch, tx::transaction& tx)
+            void create_table(const std::string& tblname, record::schema& sch, std::shared_ptr<tx::transaction> tx)
             {
                 using namespace record;
                 layout layout(sch);
@@ -68,7 +71,7 @@ namespace dbcore::metadata
                 fcat.close();
             }
 
-            std::unique_ptr<record::layout> get_layout(const std::string& tblname, tx::transaction& tx)
+            std::unique_ptr<record::layout> get_layout(const std::string& tblname, std::shared_ptr<tx::transaction> tx)
             {
                 using namespace record;
                 using namespace detail;

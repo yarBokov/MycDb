@@ -3,3 +3,6 @@
 /src/tools/*
 /src/auth/
 /src/cluster/
+
+/build/*
+/out/*

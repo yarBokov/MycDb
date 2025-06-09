@@ -18,6 +18,11 @@ namespace dbcore::query
             {
                 terms.push_back(t);
             }
+
+            predicate(std::shared_ptr<term> t)
+            {
+                terms.push_back(*t);
+            }
             
             void conjoin_with(const predicate& pred)
             {
@@ -50,7 +55,29 @@ namespace dbcore::query
                 return result->terms.empty() ? nullptr : std::move(result);
             }
 
+            std::unique_ptr<predicate> select_sub_pred(std::shared_ptr<record::schema> sch) const
+            {
+                auto result = std::make_unique<predicate>();
+                for (const auto& t : terms)
+                    if (t.applies_to(sch))
+                        result->terms.push_back(t);
+                return result->terms.empty() ? nullptr : std::move(result);
+            }
+
             std::unique_ptr<predicate> join_sub_pred(const record::schema& sch1, const record::schema& sch2) const
+            {
+                record::schema newsch;
+                newsch.add_all(sch1);
+                newsch.add_all(sch2);
+                
+                auto result = std::make_unique<predicate>();
+                for (const auto& t : terms)
+                    if (!t.applies_to(sch1) && !t.applies_to(sch2) && t.applies_to(newsch))
+                        result->terms.push_back(t);
+                return result->terms.empty() ? nullptr : std::move(result);
+            }
+
+            std::unique_ptr<predicate> join_sub_pred(std::shared_ptr<record::schema> sch1, std::shared_ptr<record::schema> sch2) const
             {
                 record::schema newsch;
                 newsch.add_all(sch1);

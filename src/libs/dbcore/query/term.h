@@ -62,6 +62,11 @@ namespace dbcore::query
                 return m_lhs.applies_to(sch) && m_rhs.applies_to(sch);
             }
 
+            bool applies_to(std::shared_ptr<record::schema> sch) const
+            {
+                return m_lhs.applies_to(sch) && m_rhs.applies_to(sch);
+            }
+
             std::string to_string() const
             {
                 return m_lhs.to_string() + "=" + m_rhs.to_string();

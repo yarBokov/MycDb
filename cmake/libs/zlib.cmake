@@ -1,6 +1,6 @@
-set(ZLIB_BASE_DIR "${MYC_EXT_LIBS_ROOT}/zlib" CACHE PATH "Base directory for zlib installation")
-set(ZLIB_LIB_HINT "${ZLIB_BASE_DIR}/lib64" CACHE PATH "Library search path hint")
-set(ZLIB_INCLUDE_DIR "${ZLIB_BASE_DIR}" CACHE PATH "Include path hint")
+set(ZLIB_BASE_DIR "${LIBS_DIR}/zlib")
+set(ZLIB_LIB_HINT "${ZLIB_BASE_DIR}/lib64")
+set(ZLIB_INCLUDE_DIR "${ZLIB_BASE_DIR}")
 
 find_library(ZLIB_LIBRARY NAMES z HINTS ${ZLIB_LIB_HINT} NO_DEFAULT_PATH DOC "Path to zlib core library")
 

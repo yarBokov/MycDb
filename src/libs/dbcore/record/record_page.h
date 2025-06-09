@@ -16,7 +16,7 @@ namespace dbcore::record
             };
 
         private:
-            tx::transaction& m_tx;
+            std::shared_ptr<tx::transaction> m_tx;
             file_mgr::block_id& m_blk;
             layout& m_layout;
 
@@ -27,12 +27,12 @@ namespace dbcore::record
 
             void set_flag(int slot, page_rec_flag flag)
             {
-                m_tx.set_int(m_blk, calculate_offset(slot), static_cast<int>(flag), true);
+                m_tx->set_int(m_blk, calculate_offset(slot), static_cast<int>(flag), true);
             }
 
             bool is_valid_slot(int slot) const
             {
-                return calculate_offset(slot + 1) <= m_tx.block_size();
+                return calculate_offset(slot + 1) <= m_tx->block_size();
             }
 
             int search_after(int slot, page_rec_flag flag)
@@ -40,7 +40,7 @@ namespace dbcore::record
                 slot++;
                 while (is_valid_slot(slot))
                 {
-                    if (m_tx.get_int(m_blk, calculate_offset(slot)) == static_cast<int>(flag))
+                    if (m_tx->get_int(m_blk, calculate_offset(slot)) == static_cast<int>(flag))
                         return slot;
                     slot++;
                 }
@@ -48,34 +48,34 @@ namespace dbcore::record
             }
 
         public:
-            record_page(tx::transaction& tx, file_mgr::block_id& blk, layout& layout)
+            record_page(std::shared_ptr<tx::transaction> tx, file_mgr::block_id& blk, layout& layout)
                 : m_tx(tx), m_blk(blk), m_layout(layout)
             {
-                m_tx.pin(m_blk);
+                m_tx->pin(m_blk);
             }
     
             int get_int(int slot, const std::string& fldname)
             {
                 int fldpos = calculate_offset(slot) + m_layout.offset(fldname);
-                return m_tx.get_int(m_blk, fldpos);
+                return m_tx->get_int(m_blk, fldpos);
             }
 
             std::string get_str(int slot, const std::string& fldname)
             {
                 int fldpos = calculate_offset(slot) + m_layout.offset(fldname);
-                return m_tx.get_str(m_blk, fldpos);
+                return m_tx->get_str(m_blk, fldpos);
             }
             
             void set_int(int slot, const std::string& fldname, int value)
             {
                 int fldpos = calculate_offset(slot) + m_layout.offset(fldname);
-                m_tx.set_int(m_blk, fldpos, value, true);
+                m_tx->set_int(m_blk, fldpos, value, true);
             }
 
             void set_str(int slot, const std::string& fldname, const std::string& value)
             {
                 int fldpos = calculate_offset(slot) + m_layout.offset(fldname);
-                m_tx.set_str(m_blk, fldpos, value, true);
+                m_tx->set_str(m_blk, fldpos, value, true);
             }
             
             void delete_record(int slot)
@@ -88,15 +88,15 @@ namespace dbcore::record
                 int slot = 0;
                 while (is_valid_slot(slot))
                 {
-                    m_tx.set_int(m_blk, calculate_offset(slot), static_cast<int>(page_rec_flag::empty), false);
+                    m_tx->set_int(m_blk, calculate_offset(slot), static_cast<int>(page_rec_flag::empty), false);
                     auto sch = m_layout.get_schema();
-                    for (const auto& fldname : sch.fields())
+                    for (const auto& fldname : sch->fields())
                     {
                         int fldpos = calculate_offset(slot) + m_layout.offset(fldname);
-                        if (sch.type(fldname) == schema::sql_types::integer)
-                            m_tx.set_int(m_blk, fldpos, 0, false);
+                        if (sch->type(fldname) == schema::sql_types::integer)
+                            m_tx->set_int(m_blk, fldpos, 0, false);
                         else
-                            m_tx.set_str(m_blk, fldpos, "", false);
+                            m_tx->set_str(m_blk, fldpos, "", false);
                     }
                     slot++;
                 }

@@ -95,7 +95,7 @@ namespace dbcore::query::optimization
                 : m_mdm(mdm)
             {}
 
-            std::shared_ptr<i_plan> create_plan(parse::query_data& data, tx::transaction& tx) override
+            std::shared_ptr<i_plan> create_plan(parse::query_data& data, std::shared_ptr<tx::transaction> tx) override
             {
                 for (const auto& tblname : data.tables())
                 {

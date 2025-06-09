@@ -30,7 +30,6 @@
 #include "tx/recovery/start_record.h"
 #include "tx/log_ops.h"
 #include "tx/buffer_list.h"
-#include "tx/isolation_levels.h"
 #include "tx/transaction.h"
 
 #include "record/layout.h"
@@ -102,5 +101,22 @@
 #include "multibuffer/chunk_scan.h"
 #include "multibuffer/multibuffer_product_plan.h"
 #include "multibuffer/multibuffer_product_scan.h"
+
+//materialize
+#include "materialize/temp_table.h"
+#include "materialize/group_value.h"
+#include "materialize/sort_plan.h"
+#include "materialize/sort_scan.h"
+#include "materialize/materialize_plan.h"
+#include "materialize/group_by_scan.h"
+#include "materialize/group_by_plan.h"
+#include "materialize/record_comparator.h"
+#include "materialize/merge_join_scan.hpp"
+#include "materialize/merge_join_plan.hpp"
+#include "materialize/aggregate_fn_factory.h"
+#include "materialize/fn/cmp_fn.h"
+#include "materialize/fn/field_names_prefixes.h"
+#include "materialize/fn/cmp_fn.h"
+#include "materialize/fn/count_fn.h"
 
 #endif

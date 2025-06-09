@@ -1,1 +1,0 @@
-#include "bitmap_index.hpp"

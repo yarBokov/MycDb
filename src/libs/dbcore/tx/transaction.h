@@ -16,21 +16,21 @@ namespace dbcore::tx
     class transaction
     {
         private:
-            static int next_tx;
+            static int m_next_tx;
             static const int npos = -1;
             static std::mutex tx_num_mtx;
             
-            recovery_mgr recovery_mgr;
-            concurrency_mgr concurrency_mgr;
-            buffer_mgr::buffer_mgr& bm;
-            file_mgr::file_mgr& fm;
-            int tx_num;
-            buffer_list buffers;
+            recovery_mgr m_recovery_mgr;
+            concurrency_mgr m_concurrency_mgr;
+            buffer_mgr::buffer_mgr& m_bm;
+            file_mgr::file_mgr& m_fm;
+            int m_tx_num;
+            buffer_list m_buffers;
             
             static int next_tx_num()
             {
                 std::lock_guard<std::mutex> lock(tx_num_mtx);
-                return ++next_tx;
+                return ++m_next_tx;
             }
 
         public:

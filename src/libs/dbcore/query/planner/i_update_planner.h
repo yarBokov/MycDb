@@ -14,12 +14,12 @@ namespace dbcore::query
     class i_update_planner
     {
         public:
-            virtual std::size_t execute_insert(parse::insert_data& data, tx::transaction& tx);
-            virtual std::size_t execute_delete(parse::delete_data& data, tx::transaction& tx);
-            virtual std::size_t execute_modify(parse::modify_data& data, tx::transaction& tx);
-            virtual std::size_t execute_create_table(parse::create_table_data& data, tx::transaction& tx);
-            virtual std::size_t execute_create_view(parse::create_view_data& data, tx::transaction& tx);
-            virtual std::size_t execute_create_index(parse::create_index_data& data, tx::transaction& tx);
+            virtual std::size_t execute_insert(parse::insert_data& data, std::shared_ptr<tx::transaction> tx);
+            virtual std::size_t execute_delete(parse::delete_data& data, std::shared_ptr<tx::transaction> tx);
+            virtual std::size_t execute_modify(parse::modify_data& data, std::shared_ptr<tx::transaction> tx);
+            virtual std::size_t execute_create_table(parse::create_table_data& data, std::shared_ptr<tx::transaction> tx);
+            virtual std::size_t execute_create_view(parse::create_view_data& data, std::shared_ptr<tx::transaction> tx);
+            virtual std::size_t execute_create_index(parse::create_index_data& data, std::shared_ptr<tx::transaction> tx);
     };
 
 }

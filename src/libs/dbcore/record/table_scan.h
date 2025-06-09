@@ -12,7 +12,7 @@ namespace dbcore::record
     class table_scan : public scan::i_update_scan
     {
         public:
-            table_scan(tx::transaction& tx, const std::string& table, const layout& layout);
+            table_scan(std::shared_ptr<tx::transaction> tx, const std::string& table, const layout& layout);
             //scan
             void before_first() override;
             bool next() override;
@@ -32,7 +32,7 @@ namespace dbcore::record
             void move_to_rid(const record::record_id& rid) override;
 
         private:
-            tx::transaction& m_tx;
+            std::shared_ptr<tx::transaction> m_tx;
             layout m_layout;
             std::string m_filename;
             std::unique_ptr<record_page> m_rec_page;

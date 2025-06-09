@@ -21,7 +21,7 @@ namespace dbcore::index
             std::size_t blocks_accessed() const override;
             std::size_t records() const override;
             std::size_t distinct_values(const std::string& fldname) const override;
-            record::schema schema() override;
+            std::shared_ptr<record::schema> schema() override;
     };
 }
 

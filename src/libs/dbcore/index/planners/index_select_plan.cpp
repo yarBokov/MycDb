@@ -33,7 +33,7 @@ namespace dbcore::index
         return m_idx_stats->distinct_values(fldname);
     }
 
-    record::schema index_select_plan::schema()
+    std::shared_ptr<record::schema> index_select_plan::schema()
     {
         return m_plan->schema();
     }

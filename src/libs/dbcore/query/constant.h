@@ -46,9 +46,28 @@ namespace dbcore::query
                 return m_value == other.m_value;
             }
 
+            bool operator!= (const constant& other) const
+            {
+                return m_value != other.m_value;
+            }
+
             bool operator< (const constant& other) const
             {
                 return m_value < other.m_value;
+            }
+
+            bool operator> (const constant& other) const
+            {
+                return m_value > other.m_value;
+            }
+
+            int compare_to(const constant& other)
+            {
+                if (*this < other)
+                    return -1;
+                else if (*this > other)
+                    return 1;
+                return 0;
             }
             
             std::string to_string() const
@@ -70,11 +89,11 @@ namespace dbcore::query
                         return arg;
                     else if constexpr (std::is_same_v<Type, std::string>)
                     {
-                        int hash = 0;
+                        int hashcode = 0;
                         for (char ch : arg)
-                            hash = 31 * hash + ch;
+                            hashcode = 31 * hashcode + ch;
                             
-                        return hash;
+                        return hashcode;
                     }
                 }, m_value);
             }

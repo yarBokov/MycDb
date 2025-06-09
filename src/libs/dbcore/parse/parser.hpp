@@ -25,9 +25,9 @@ namespace dbcore::parse
             std::vector<std::string> field_list();
             std::vector<query::constant> const_list();
 
-            record::schema field_defs();
-            record::schema field_def();
-            record::schema field_type(const std::string& fldname);
+            std::shared_ptr<record::schema> field_defs();
+            std::shared_ptr<record::schema> field_def();
+            std::shared_ptr<record::schema> field_type(const std::string& fldname);
 
         public:
             using update_cmd_parse_result = std::variant<insert_data, delete_data, modify_data, 

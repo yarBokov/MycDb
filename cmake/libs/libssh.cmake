@@ -1,10 +1,8 @@
-set(LIBSSH_BASE_DIR "${MYC_EXT_LIBS_ROOT}/libssh" CACHE PATH "libssh installation root")
-set(LIBSSH_LIB_HINT "${LIBSSH_BASE_DIR}/lib64" CACHE PATH "Library search hint")
+set(LIBSSH_BASE_DIR "${LIBS_DIR}/libssh")
+set(LIBSSH_LIB_HINT "${LIBSSH_BASE_DIR}/lib64")
 set(LIBSSH_INCLUDE_DIRS
     "${LIBSSH_BASE_DIR}/include"
-    "${LIBSSH_LIB_HINT}/include"
-    CACHE STRING "Include path hints"
-)
+    "${LIBSSH_LIB_HINT}/include")
 
 find_library(LIBSSH_LIBRARY NAMES ssh HINTS ${LIBSSH_LIB_HINT} 
     NO_DEFAULT_PATH DOC "Path to libssh core library")

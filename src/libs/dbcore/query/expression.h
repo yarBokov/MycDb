@@ -87,6 +87,11 @@ namespace dbcore::query
                 return m_val ? true : sch.has_field(*m_fldname);
             }
 
+            bool applies_to(std::shared_ptr<record::schema> sch) const
+            {
+                return m_val ? true : sch->has_field(*m_fldname);
+            }
+
             std::string to_string() const
             {
                 return m_val ? m_val->to_string() : *m_fldname;

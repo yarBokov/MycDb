@@ -5,7 +5,10 @@
 #include "libs/dbcore/record/schema.h"
 #include "libs/dbcore/record/layout.h"
 #include "libs/dbcore/tx/transaction.h"
+#include "libs/dbcore/index/i_index.h"
 #include "libs/dbcore/index/index_type.h"
+#include "libs/dbcore/index/hash/hash_index.hpp"
+#include "libs/dbcore/index/btree/btree_index.hpp"
 
 namespace dbcore::metadata
 {
@@ -14,14 +17,15 @@ namespace dbcore::metadata
         private:
             std::string m_idxname;
             std::string m_fldname;
-            tx::transaction& m_tx;
-            std::unique_ptr<record::schema> m_tbl_sch;
+            std::shared_ptr<tx::transaction> m_tx;
+            std::shared_ptr<record::schema> m_tbl_sch;
             std::unique_ptr<record::layout> m_idx_layout;
             stat_info m_stats;
+            index::index_type m_idx_type;
 
             std::unique_ptr<record::layout> create_index_layout()
             {
-                auto sch = std::make_unique<record::schema>();
+                auto sch = std::make_shared<record::schema>();
                 sch->add_int_field("block");
                 sch->add_int_field("id");
                 if (m_tbl_sch->length(m_fldname) == static_cast<int>(record::schema::sql_types::integer))
@@ -31,34 +35,49 @@ namespace dbcore::metadata
                     int fldlen = m_tbl_sch->length(m_fldname);
                     sch->add_str_field("dataval", fldlen);
                 }
-                return std::make_unique<record::layout>(*sch);
+                return std::make_unique<record::layout>(sch);
             }
 
         public:
             index_info() = default;
             index_info(const std::string& idxname, const std::string& fldname, 
-                      std::unique_ptr<record::schema> sch, tx::transaction& tx, const stat_info& stats)
+                      std::shared_ptr<record::schema> sch, std::shared_ptr<tx::transaction> tx, const stat_info& stats, index::index_type idx_type)
                 : m_idxname(idxname)
                 , m_fldname(fldname)
                 , m_tx(tx)
-                , m_tbl_sch(std::move(sch))
+                , m_tbl_sch(sch)
                 , m_stats(stats)
+                , m_idx_type(idx_type)
             {
                 m_idx_layout = create_index_layout();
             }
 
-            std::shared_ptr<index::i_index> open() //TODO: Change return type when index class will be ready
+            std::shared_ptr<index::i_index> open()
             {
-                return ;
-                // return new btree_index();
+                switch (m_idx_type)
+                {
+                    case index::index_type::hash_index:
+                        return std::make_shared<index::hash_index>(m_tx, m_idxname, *m_idx_layout);
+                    case index::index_type::binarytree_index:
+                        return std:: make_shared<index::btree_index>(m_tx, m_idxname, *m_idx_layout);
+                    default:
+                        return nullptr;
+                }
             }
 
             std::size_t blocks_accessed() const
             {
-                int rpb = m_tx.block_size() / m_idx_layout->slot_size();
+                int rpb = m_tx->block_size() / m_idx_layout->slot_size();
                 int num_blocks = m_stats.records_output() / rpb;
-                return 0;
-                //TODO: change to index->search_cost();
+                switch (m_idx_type)
+                {
+                    case index::index_type::hash_index:
+                        return index::hash_index::search_cost(num_blocks, rpb);
+                    case index::index_type::binarytree_index:
+                        return index::btree_index::search_cost(num_blocks, rpb);
+                    default:
+                        return -1;
+                }
             }
 
             std::size_t records_output() const

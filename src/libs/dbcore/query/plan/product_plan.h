@@ -28,14 +28,14 @@ namespace dbcore::query::plan
         private:
             std::unique_ptr<i_plan> m_plan_lhs;
             std::unique_ptr<i_plan> m_plan_rhs;
-            record::schema m_sch;
+            std::shared_ptr<record::schema> m_sch;
 
         public:
             explicit product_plan(std::unique_ptr<i_plan> plan_lhs, std::unique_ptr<i_plan> plan_rhs)
                 : m_plan_lhs(std::move(plan_lhs)), m_plan_rhs(std::move(plan_rhs))
             {
-                m_sch.add_all(m_plan_lhs->schema());
-                m_sch.add_all(m_plan_rhs->schema());
+                m_sch->add_all(*m_plan_lhs->schema());
+                m_sch->add_all(*m_plan_rhs->schema());
             }
 
             std::shared_ptr<scan::i_scan> open() override
@@ -58,13 +58,13 @@ namespace dbcore::query::plan
 
             std::size_t distinct_values(const std::string& fldname) const override
             {
-                if (m_plan_lhs->schema().has_field(fldname))
+                if (m_plan_lhs->schema()->has_field(fldname))
                     return m_plan_lhs->distinct_values(fldname);
-                else if (m_plan_rhs->schema().has_field(fldname))
+                else if (m_plan_rhs->schema()->has_field(fldname))
                     return m_plan_rhs->distinct_values(fldname);
             }
 
-            record::schema schema() override
+            std::shared_ptr<record::schema> schema() override
             {
                 return m_sch;
             }

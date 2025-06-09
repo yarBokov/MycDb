@@ -4,6 +4,8 @@
 #include "libs/dbcore/log/log_mgr.h"
 #include "libs/dbcore/buffer/buffer_mgr.h"
 
+#include "libs/dbcore/tx/transaction.h"
+
 #include "start_record.h"
 #include "commit_record.h"
 #include "rollback_record.h"
@@ -16,26 +18,28 @@
 
 namespace dbcore::tx
 {
+    class transaction;
+
     class recovery_mgr
     {
         private:
-            log_mgr::log_mgr& lm;
-            buffer_mgr::buffer_mgr& bm;
-            transaction& tx;
-            int tx_num;
+            log_mgr::log_mgr& m_lm;
+            buffer_mgr::buffer_mgr& m_bm;
+            std::shared_ptr<transaction> m_tx;
+            int m_tx_num;
 
             void do_rollback()
             {
-                auto log_iter = lm.iterator();
+                auto log_iter = m_lm.iterator();
                 while (log_iter.has_next())
                 {
                     auto bytes = log_iter.next();
                     auto rec = log_record::create_log_record(bytes);
-                    if (rec->tx_num() == tx_num)
+                    if (rec->tx_num() == m_tx_num)
                     {
                         if (rec->operation() == log_operation::start)
                             return;
-                        rec->undo(tx);
+                        rec->undo(m_tx);
                     }
                 }
             }
@@ -43,7 +47,7 @@ namespace dbcore::tx
             void do_recover()
             {
                 std::unordered_set<int> finished_txs;
-                auto log_iter = lm.iterator();
+                auto log_iter = m_lm.iterator();
                 while (log_iter.has_next())
                 {
                     auto bytes = log_iter.next();
@@ -54,53 +58,53 @@ namespace dbcore::tx
                         || rec->operation() == log_operation::rollback)
                         finished_txs.insert(rec->tx_num());
                     else if (finished_txs.find(rec->tx_num()) == finished_txs.end())
-                        rec->undo(tx);
+                        rec->undo(m_tx);
                 }
             }
 
         public:
             recovery_mgr() = default;
-            recovery_mgr(transaction& tx, int tx_num, log_mgr::log_mgr& lm, buffer_mgr::buffer_mgr& bm)
-                : tx(tx), tx_num(tx_num), lm(lm), bm(bm)
+            recovery_mgr(std::shared_ptr<transaction> tx, int tx_num, log_mgr::log_mgr& lm, buffer_mgr::buffer_mgr& bm)
+                : m_tx(tx), m_tx_num(tx_num), m_lm(lm), m_bm(bm)
             {
-                start_record::write_to_log(this->lm, this->tx_num);
+                start_record::write_to_log(m_lm, m_tx_num);
             }
 
             void commit()
             {
-                bm.flush_all(tx_num);
-                int lsn = commit_record::write_to_log(lm, tx_num);
-                lm.flush(lsn);
+                m_bm.flush_all(m_tx_num);
+                int lsn = commit_record::write_to_log(m_lm, m_tx_num);
+                m_lm.flush(lsn);
             }
 
             void rollback()
             {
                 do_rollback();
-                bm.flush_all(tx_num);
-                int lsn = rollback_record::write_to_log(lm, tx_num);
-                lm.flush(lsn);
+                m_bm.flush_all(m_tx_num);
+                int lsn = rollback_record::write_to_log(m_lm, m_tx_num);
+                m_lm.flush(lsn);
             }
 
             void recover()
             {
                 do_recover();
-                bm.flush_all(tx_num);
-                int lsn = checkpoint_record::write_to_log(lm);
-                lm.flush(lsn);
+                m_bm.flush_all(m_tx_num);
+                int lsn = checkpoint_record::write_to_log(m_lm);
+                m_lm.flush(lsn);
             }
 
             int set_int(buffer_mgr::buffer& buf, int offset, int new_val)
             {
                 int old_val = buf.contents().get_int(offset);
                 auto blk = buf.block();
-                return set_int_record::write_to_log(lm, tx_num, *blk ,offset, old_val);
+                return set_int_record::write_to_log(m_lm, m_tx_num, *blk , offset, old_val);
             }
 
             int set_string(buffer_mgr::buffer& buf, int offset, const std::string& new_val)
             {
                 std::string old_val = buf.contents().get_string(offset);
                 auto blk = buf.block();
-                return set_str_record::write_to_log(lm, tx_num, *blk ,offset, old_val);
+                return set_str_record::write_to_log(m_lm, m_tx_num, *blk, offset, old_val);
             }
     };
 }

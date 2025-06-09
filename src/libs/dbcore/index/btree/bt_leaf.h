@@ -92,7 +92,7 @@ namespace dbcore::index
                 }
 
                 m_curr_slot++;
-                m_contents.insert_leaf(m_curr_slot, m_search_key);
+                m_contents.insert_leaf(m_curr_slot, m_search_key, rid);
                 if (!m_contents.is_full())
                     return dir_entry{};
 

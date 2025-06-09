@@ -27,37 +27,37 @@ namespace dbcore::metadata
                 m_idx_mgr = std::make_unique<index_mgr>();
             }
 
-            void create_table(const std::string& tblname, record::schema& sch, tx::transaction& tx)
+            void create_table(const std::string& tblname, record::schema& sch, std::shared_ptr<tx::transaction> tx)
             {
                 m_tbl_mgr->create_table(tblname, sch, tx);
             }
 
-            std::unique_ptr<record::layout> get_layout(const std::string& tblname, tx::transaction& tx)
+            std::unique_ptr<record::layout> get_layout(const std::string& tblname, std::shared_ptr<tx::transaction> tx)
             {
                 return m_tbl_mgr->get_layout(tblname, tx);
             }
 
-            void create_view(const std::string& vwname, std::string vwdef, tx::transaction& tx)
+            void create_view(const std::string& vwname, std::string vwdef, std::shared_ptr<tx::transaction> tx)
             {
                 m_view_mgr->create_view(vwname, vwdef, tx);
             }
 
-            std::string get_view_def(const std::string& vwname, tx::transaction& tx)
+            std::string get_view_def(const std::string& vwname, std::shared_ptr<tx::transaction> tx)
             {
                 m_view_mgr->get_view_def(vwname, tx);
             }
 
-            std::shared_ptr<stat_info> get_stat_info(const std::string& tblname, record::layout& layout, tx::transaction& tx)
+            std::shared_ptr<stat_info> get_stat_info(const std::string& tblname, record::layout& layout, std::shared_ptr<tx::transaction> tx)
             {
                 return m_stat_mgr->get_stat_info(tblname, layout, tx);
             }
 
-            void create_index(const std::string& idxname, const std::string& tblname, const std::string& fldname, tx::transaction& tx)
+            void create_index(const std::string& idxname, const std::string& tblname, const std::string& fldname, std::shared_ptr<tx::transaction> tx)
             {
                 m_idx_mgr->create_index(idxname, tblname, fldname, tx);
             }
 
-            std::unordered_map<std::string, index_info> get_index_info(const std::string& tblname, tx::transaction& tx)
+            std::unordered_map<std::string, index_info> get_index_info(const std::string& tblname, std::shared_ptr<tx::transaction> tx)
             {
                 return m_idx_mgr->get_index_info(tblname, tx);
             }

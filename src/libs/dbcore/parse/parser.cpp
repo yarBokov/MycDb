@@ -65,31 +65,31 @@ namespace dbcore::parse
         return l;
     }
 
-    record::schema parser::field_defs()
+    std::shared_ptr<record::schema> parser::field_defs()
     {
-        record::schema sch = field_def();
+        auto sch = field_def();
         if (m_lexer.match_delimeter(','))
         {
             m_lexer.consume_delimeter(',');
-            record::schema sch_2 = field_defs();
-            sch.add_all(sch_2);
+            auto sch_2 = field_defs();
+            sch->add_all(sch_2);
         }
         return sch;
     }
 
-    record::schema parser::field_def()
+    std::shared_ptr<record::schema> parser::field_def()
     {
         std::string fldname = get_field();
         return field_type(fldname);
     }
 
-    record::schema parser::field_type(const std::string& fldname)
+    std::shared_ptr<record::schema> parser::field_type(const std::string& fldname)
     {
-        record::schema sch;
+        std::shared_ptr<record::schema> sch;
         if (m_lexer.match_keyword("int"))
         {
             m_lexer.consume_keyword("int");
-            sch.add_int_field(fldname);
+            sch->add_int_field(fldname);
         }
         else
         {
@@ -97,7 +97,7 @@ namespace dbcore::parse
             m_lexer.consume_delimeter('(');
             int strlen = m_lexer.consume_int_constant();
             m_lexer.consume_delimeter(')');
-            sch.add_str_field(fldname, strlen);
+            sch->add_str_field(fldname, strlen);
         }
         return sch;
     }
@@ -128,7 +128,7 @@ namespace dbcore::parse
         auto lhs = expression();
         m_lexer.consume_delimeter('=');
         auto rhs = expression();
-        return std::make_shared<query::term>(lhs, rhs);
+        return std::make_shared<query::term>(*lhs, *rhs);
     }
 
     std::shared_ptr<query::predicate> parser::predicate()

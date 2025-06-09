@@ -32,7 +32,7 @@ namespace dbcore::index
 
             query::constant get_val(int slot, const std::string& fldname) const
             {
-                auto type = m_layout.get_schema().type(fldname);
+                auto type = m_layout.get_schema()->type(fldname);
                 if (type == dbcore::record::schema::sql_types::integer)
                     return query::constant(get_int(slot, fldname));
                 else
@@ -53,7 +53,7 @@ namespace dbcore::index
 
             void set_val(int slot, const std::string& fldname, const query::constant& val)
             {
-                auto type = m_layout.get_schema().type(fldname);
+                auto type = m_layout.get_schema()->type(fldname);
                 if (type == dbcore::record::schema::sql_types::integer)
                     set_int(slot, fldname, val.as_int());
                 else
@@ -75,7 +75,7 @@ namespace dbcore::index
             void copy_record(int from, int to)
             {
                 const auto& sch = m_layout.get_schema();
-                for (const auto& fldname : sch.fields())
+                for (const auto& fldname : sch->fields())
                     set_val(to, fldname, get_val(from ,fldname));
             }
 
@@ -86,7 +86,7 @@ namespace dbcore::index
                 {
                     dest.insert(dest_slot);
                     const auto& sch = m_layout.get_schema();
-                    for (const auto& fldname : sch.fields())
+                    for (const auto& fldname : sch->fields())
                         dest.set_val(dest_slot, fldname, get_val(slot, fldname));
 
                     delete_record(slot);
@@ -108,10 +108,10 @@ namespace dbcore::index
 
             void make_default_record(const block_id& blk, int pos)
             {
-                for (const auto& fldname : m_layout.get_schema().fields())
+                for (const auto& fldname : m_layout.get_schema()->fields())
                 {
                     int offset = m_layout.offset(fldname);
-                    if (m_layout.get_schema().type(fldname) == dbcore::record::schema::sql_types::integer)
+                    if (m_layout.get_schema()->type(fldname) == dbcore::record::schema::sql_types::integer)
                         m_tx->set_int(blk, pos + offset, 0, false);
                     else
                         m_tx->set_str(blk ,pos + offset, "", false);
@@ -128,6 +128,7 @@ namespace dbcore::index
                 m_tx = other.m_tx;
                 m_curr_blk = other.m_curr_blk;
                 m_layout = other.m_layout;
+                return *this;
             }
 
             ~btree_page()

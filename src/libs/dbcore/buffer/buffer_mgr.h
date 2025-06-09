@@ -1,7 +1,7 @@
 #ifndef __BUFFER_MGR_IMPL_H
 #define __BUFFER_MGR_IMPL_H
 
-#include "exceptions/buffer_abort_exception.h"
+#include "libs/dbcore/exceptions/buffer_abort_exception.h"
 #include "buffer.h"
 #include "libs/dbcore/file/file_mgr.h"
 #include "libs/dbcore/log/log_mgr.h"

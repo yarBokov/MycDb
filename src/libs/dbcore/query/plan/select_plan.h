@@ -54,7 +54,7 @@ namespace dbcore::query::plan
                 }
             }
 
-            record::schema schema() override
+            std::shared_ptr<record::schema> schema() override
             {
                 return m_plan->schema();
             }

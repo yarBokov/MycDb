@@ -15,7 +15,7 @@ namespace dbcore::index
             std::shared_ptr<i_plan> m_rhs_plan;
             std::shared_ptr<metadata::index_info> m_idx_stats;
             std::string m_join_field;
-            record::schema m_sch;
+            std::shared_ptr<record::schema> m_sch;
 
         public:
             index_join_plan(i_plan* lhs_plan, std::shared_ptr<i_plan> rhs_plan, 
@@ -24,7 +24,7 @@ namespace dbcore::index
             std::size_t blocks_accessed() const override;
             std::size_t records() const override;
             std::size_t distinct_values(const std::string& fldname) const override;
-            record::schema schema() override;
+            std::shared_ptr<record::schema> schema() override;
     };
 }
 

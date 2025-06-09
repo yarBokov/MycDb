@@ -21,7 +21,7 @@ namespace dbcore::query::optimization
         private:
             std::shared_ptr<query::plan::table_plan> m_tbl_plan;
             predicate m_pred;
-            record::schema m_sch;
+            std::shared_ptr<record::schema> m_sch;
             std::unordered_map<std::string, metadata::index_info> m_indexes;
             std::shared_ptr<tx::transaction> m_tx;
 
@@ -40,12 +40,12 @@ namespace dbcore::query::optimization
                 return nullptr;
             }
 
-            std::optional<std::unique_ptr<query::plan::i_plan>> construct_index_join(query::plan::i_plan* curr, const record::schema& currsch)
+            std::optional<std::unique_ptr<query::plan::i_plan>> construct_index_join(query::plan::i_plan* curr, std::shared_ptr<record::schema> currsch)
             {
                 for (const auto& [fldname, ii] : m_indexes)
                 {
                     auto outer_field = m_pred.equates_with_field(fldname);
-                    if (currsch.has_field(outer_field))
+                    if (currsch->has_field(outer_field))
                     {
                         auto p = add_select_predicate(std::make_unique<index::index_join_plan>(
                             curr, std::shared_ptr<query::plan::i_plan>(m_tbl_plan.get()), ii, outer_field));
@@ -55,7 +55,7 @@ namespace dbcore::query::optimization
                 return std::nullopt;
             }
 
-            std::unique_ptr<query::plan::i_plan> construct_product_join(query::plan::i_plan* curr, const record::schema& currsch)
+            std::unique_ptr<query::plan::i_plan> construct_product_join(query::plan::i_plan* curr, std::shared_ptr<record::schema> currsch)
             {
                 auto p = construct_product_plan(curr);
                 return add_join_predicate(std::move(p), currsch);
@@ -69,7 +69,7 @@ namespace dbcore::query::optimization
                 return p;
             }
 
-            std::unique_ptr<query::plan::i_plan> add_join_predicate(std::unique_ptr<query::plan::i_plan> p, const record::schema& currsch)
+            std::unique_ptr<query::plan::i_plan> add_join_predicate(std::unique_ptr<query::plan::i_plan> p,std::shared_ptr<record::schema> currsch)
             {
                 auto joinpred = m_pred.join_sub_pred(currsch, m_sch);
                 if (joinpred)
@@ -85,7 +85,7 @@ namespace dbcore::query::optimization
             {
                 m_tbl_plan = std::make_unique<query::plan::table_plan>();
                 m_sch = m_tbl_plan->schema();
-                m_indexes = mdm.get_index_info(tblname, *m_tx);
+                m_indexes = mdm.get_index_info(tblname, m_tx);
             }
 
             std::unique_ptr<query::plan::i_plan> construct_select_plan()

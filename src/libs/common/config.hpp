@@ -6,13 +6,13 @@
 namespace config
 {
     //paths
-    extern const std::string db_directory = "/opt/mycdb/";
-    extern const std::string dbs = "/opt/mycdb/db/";
-    extern const std::string db_conf_file = "opt/mycdb/mycdb.conf";
-    extern const std::string sql_query_dict = "opt/mycdb/querydict.txt";
+    extern const std::string db_directory;
+    extern const std::string dbs;
+    extern const std::string db_conf_file;
+    extern const std::string sql_query_dict;
 
     //db
-    extern const std::string table_ext = ".tbl";
+    extern const std::string table_ext;
 }
 
 #endif

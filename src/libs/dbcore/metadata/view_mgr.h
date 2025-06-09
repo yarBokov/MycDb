@@ -13,7 +13,7 @@ namespace dbcore::metadata
             table_mgr& m_tbl_mgr;
         
         public:
-            view_mgr(bool is_new, table_mgr& tbl_mgr, tx::transaction& tx)
+            view_mgr(bool is_new, table_mgr& tbl_mgr, std::shared_ptr<tx::transaction> tx)
                 : m_tbl_mgr(tbl_mgr)
             {
                 if (is_new)
@@ -25,7 +25,7 @@ namespace dbcore::metadata
                 }
             }
 
-            void create_view(const std::string& vw_name, const std::string& vw_def, tx::transaction& tx)
+            void create_view(const std::string& vw_name, const std::string& vw_def, std::shared_ptr<tx::transaction> tx)
             {
                 auto layout = m_tbl_mgr.get_layout(detail::fields_catalog_tbl, tx);
                 record::table_scan tbl_sc(tx, detail::view_catalog_tbl, *layout);
@@ -35,7 +35,7 @@ namespace dbcore::metadata
                 tbl_sc.close();
             }
 
-            std::string get_view_def(const std::string& vw_name, tx::transaction& tx)
+            std::string get_view_def(const std::string& vw_name, std::shared_ptr<tx::transaction> tx)
             {
                 std::string result;
                 auto layout = m_tbl_mgr.get_layout(detail::view_catalog_tbl, tx);

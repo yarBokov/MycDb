@@ -1,6 +1,6 @@
-set(FMT_BASE_DIR "${MYC_EXT_LIBS_ROOT}/fmt" CACHE PATH "Base directory for {fmt} installation")
-set(FMT_LIB_HINT "${FMT_BASE_DIR}/lib64" CACHE PATH "Library search path hint")
-set(FMT_INCLUDE_DIR "${FMT_BASE_DIR}/include" CACHE PATH "Include path hint")
+set(FMT_BASE_DIR "${LIBS_DIR}/fmt")
+set(FMT_LIB_HINT "${FMT_BASE_DIR}/lib64")
+set(FMT_INCLUDE_DIR "${FMT_BASE_DIR}/include")
 
 find_library(FMT_LIBRARY NAMES fmt HINTS ${FMT_LIB_HINT} NO_DEFAULT_PATH DOC "Path to {fmt} core library")
 

@@ -30,6 +30,40 @@ namespace dbcore::buffer_mgr
             }
 
             ~buffer() = default;
+
+            buffer(const buffer& other)
+                : m_file_mgr(other.m_file_mgr)
+                , m_log_mgr(other.m_log_mgr)
+                , m_pins(other.m_pins)
+                , m_tx_num(other.m_tx_num)
+                , m_lsn(other.m_lsn)
+            {
+                if (other.m_contents)
+                    m_contents = std::make_unique<file_mgr::page>(other.m_contents->contents());
+                if (other.m_blk)
+                    m_blk = std::make_unique<file_mgr::block_id>(*other.m_blk);
+            }
+
+            buffer& operator=(const buffer& other) {
+                if (this != &other) {
+                    m_file_mgr = other.m_file_mgr;
+                    m_log_mgr = other.m_log_mgr;
+                    m_pins = other.m_pins;
+                    m_tx_num = other.m_tx_num;
+                    m_lsn = other.m_lsn;
+
+                    if (other.m_contents)
+                        m_contents = std::make_unique<file_mgr::page>(other.m_contents->contents());
+                    else
+                        m_contents.reset();
+
+                    if (other.m_blk)
+                        m_blk = std::make_unique<file_mgr::block_id>(*other.m_blk);
+                    else 
+                        m_blk.reset();
+                }
+                return *this;
+            }
     
             file_mgr::page& contents()
             {

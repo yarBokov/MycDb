@@ -3,26 +3,25 @@
 #   • MOD_DIR - Корневая директория модуля
 #   • [FLAGS]
 #     - VERBOSE - Подробный вывод
-#     - USE_PARENT - Использовать родительскую директорию (N уровней вверх)
 #   • [CONFIG]
 #     - PREFIX - Префикс проекта (по умолчанию ${PROJECT_NAME})
-#     - SRC_ROOT - Корень исходников (по умолчанию ${PROJECT_SOURCE_DIR}/src)
 #   • [OUTPUTS]
 #     - LIB_NAME - Имя библиотеки (без префикса)
-#     - LIB_PATH - Относительный путь библиотеки
-#     - TARGET - Имя цели CMake
-#     - ALIAS - Алиас цели
-#     - INCLUDE_DIR - Суффикс для include директории
+#     - TARGET_NAME - Имя цели CMake
+#     - TARGET_ALIAS - Алиас цели
 #
 # [OUT]
 #   Заполняет указанные выходные переменные в родительской области видимости
 function(decode_module_path MOD_DIR)
+    set(verbose_message_prefix "[DECODE_MODULE_PATH]: ")
+
     set(opt_args VERBOSE USE_PARENT)
-    set(single_args 
-        PREFIX SRC_ROOT 
-        LIB_NAME LIB_PATH BASE_LIB_PATH 
-        BASE_PREFIX BASE_SUFFIX 
-        TARGET ALIAS INCLUDE_DIR)
+    set(single_args  
+        LIB_NAME REL_PATH BASE_REL_PATH 
+        BASE_PREFIX
+        PROJ_PREFIX SRC_ROOT
+        TARGET_NAME TARGET_ALIAS)
+
     cmake_parse_arguments(DMP "${opt_args}" "${single_args}" "" ${ARGN})
 
     # Конфигурация по умолчанию
@@ -33,69 +32,75 @@ function(decode_module_path MOD_DIR)
     if(DMP_SRC_ROOT)
         set(src_root "${DMP_SRC_ROOT}")
     endif()
-    if(DMP_PREFIX)
+    if(DMP_PROJ_PREFIX)
         set(proj_prefix "${DMP_PREFIX}")
     endif()
 
-    # Обработка родительских директорий
-    set(actual_dir "${MOD_DIR}")
-    if(DMP_USE_PARENT)
-        math(EXPR levels "${DMP_USE_PARENT}+0")  # Преобразование в число
-        foreach(i RANGE 1 ${levels})
-            get_filename_component(actual_dir "${actual_dir}" DIRECTORY)
-        endforeach()
-        
-        if(DMP_VERBOSE)
-            message(STATUS "[DMP] Parent dirs: ${levels} → ${actual_dir}")
-        endif()
-    endif()
-
     # Валидация пути
-    string(FIND "${actual_dir}" "${src_root}/" root_pos)
+    string(FIND "${MOD_DIR}" "${src_root}/" root_pos)
     if(root_pos EQUAL -1)
-        message(WARNING "[DMP] Invalid path: ${src_root} not in ${actual_dir}")
+        message(WARNING "${verbose_message_prefix} Invalid path: ${src_root} not in ${MOD_DIR}")
         return()
     endif()
 
+    set(mod_prefix "${proj_prefix}")
+    convert_to_target_name("${mod_prefix}" MOD_PREFIX)
+
     # Извлечение компонентов пути
     string(LENGTH "${src_root}/" root_len)
-    string(SUBSTRING "${actual_dir}" ${root_len} -1 rel_path)
-    
-    # Генерация имен
-    string(REPLACE "/" "-" lib_name "${rel_path}")
-    string(FIND "${lib_name}" "-" first_dash)
-    
-    set(base_prefix "${lib_name}")
-    set(base_suffix "")
-    if(NOT first_dash EQUAL -1)
-        string(SUBSTRING "${lib_name}" 0 ${first_dash} base_prefix)
-        math(EXPR suffix_start "${first_dash}+1")
-        string(SUBSTRING "${lib_name}" ${suffix_start} -1 base_suffix)
-    endif()
+    string(SUBSTRING "${MOD_DIR}" ${root_len} -1 dir_suffix)
+    string(PREPEND dir_suffix "${mod_prefix}/")
 
-    # Формирование выходных значений
-    set(full_target "${proj_prefix}-${lib_name}")
-    set(target_alias "${proj_prefix}::${lib_name}")
-    set(include_suffix "${proj_prefix}/${rel_path}")
+    string(FIND "${dir_suffix}" "/" prefix_index)
+    string(SUBSTRING "${dir_suffix}" ${prefix_index} -1 rel_path)
+    string(SUBSTRING "${rel_path}" 1 -1 rel_path)
+    string(FIND "${rel_path}" "/" suffix_index REVERSE)
+    string(SUBSTRING "${rel_path}" 0 ${suffix_index} base_rel_path)
+    convert_to_target_name("${rel_path}" lib_name)
+
+    string(FIND "${lib_name}" "-" base_prefix_index)
+    string(SUBSTRING "${lib_name}" 0 base_prefix_index base_prefix)
+
+    set(target_name "${mod_prefix}-${lib_name}")
+    set(target_alias "${mod_prefix}::${lib_name}")
 
     # Вывод отладочной информации
     if(DMP_VERBOSE)
-        message(STATUS "[DMP] Module components:")
-        message(STATUS "  • Library: ${lib_name}")
-        message(STATUS "  • Target: ${full_target}")
-        message(STATUS "  • Alias: ${target_alias}")
-        message(STATUS "  • Includes: ${include_suffix}")
+        message(STATUS "${verbose_message_prefix} src: ${src_root}")
+        message(STATUS "${verbose_message_prefix} module: ${MOD_DIR}")
+        message(STATUS "${verbose_message_prefix} prefix: ${mod_prefix}")
+        message(STATUS "${verbose_message_prefix} Lib Name: ${lib_name}")
+        message(STATUS "${verbose_message_prefix} Relative Path: ${rel_path}")
+        message(STATUS "${verbose_message_prefix} Base Relative Path: ${base_rel_path}")
+        message(STATUS "${verbose_message_prefix} prefix: ${base_prefix}")
+        message(STATUS "${verbose_message_prefix} Target Name: ${target_name}")
+        message(STATUS "${verbose_message_prefix} Target Alias: ${target_alias}")
     endif()
 
-    # Установка выходных переменных
-    foreach(var IN ITEMS 
-        LIB_NAME LIB_PATH BASE_LIB_PATH 
-        BASE_PREFIX BASE_SUFFIX 
-        TARGET ALIAS INCLUDE_DIR)
-        if(DMP_${var})
-            set(${DMP_${var}} "${${var}}" PARENT_SCOPE)
-        endif()
-    endforeach()
+    if (DEFINED DMP_LIB_NAME)
+        set(${DMP_LIB_NAME} "${lib_name}" PARENT_SCOPE)
+    endif()
+    
+    if (DEFINED DMP_TARGET_NAME)
+        set(${DMP_TARGET_NAME} "${target_name}" PARENT_SCOPE)
+    endif()
+    
+    if (DEFINED DMP_TARGET_ALIAS)
+        set(${DMP_TARGET_ALIAS} "${target_alias}" PARENT_SCOPE)
+    endif()
+
+    if (DEFINED DMP_BASE_PREFIX)
+        set(${DMP_BASE_PREFIX} "${base_prefix}" PARENT_SCOPE)
+    endif()
+    
+    if (DEFINED DMP_REL_PATH)
+        set(${DMP_REL_PATH} "${rel_path}" PARENT_SCOPE)
+    endif()
+    
+    if (DEFINED DMP_BASE_REL_PATH)
+        set(${DMP_BASE_REL_PATH} "${base_rel_path}" PARENT_SCOPE)
+    endif()
+
 endfunction()
 
 function(get_local_sources OUT_VAR)
@@ -112,6 +117,7 @@ function(get_local_sources OUT_VAR)
     
     if(ARG_ALL OR ARG_SOURCES)
         file(GLOB_RECURSE CPP_FILES "${BASE_DIR}/*.cpp")
+        list(FILTER CPP_FILES EXCLUDE REGEX "/tests")
         list(APPEND RESULT_FILES ${CPP_FILES})
     endif()
 
@@ -120,24 +126,9 @@ function(get_local_sources OUT_VAR)
             "${BASE_DIR}/*.h"
             "${BASE_DIR}/*.hpp"
         )
+        list(FILTER H_FILES EXCLUDE REGEX "/tests")
         list(APPEND RESULT_FILES ${H_FILES})
     endif()
 
     set(${OUT_VAR} ${RESULT_FILES} PARENT_SCOPE)
-endfunction()
-
-function(add_lib sources target_name target_alias)
-    if(STATIC)
-        set(lib_type STATIC)
-    else()
-        set(lib_type SHARED)
-    endif()
-
-    add_library(${target_name} ${lib_type} ${sources})
-
-    if (NOT "${target_alias}" STREQUAL "")
-        add_library(${target_alias} ALIAS ${target_name})
-    endif()
-
-    target_include_directories(${target_name} PUBLIC "${PROJECT_SOURCE_DIR}/src")
 endfunction()

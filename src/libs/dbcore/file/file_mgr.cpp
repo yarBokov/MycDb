@@ -1,6 +1,6 @@
 #include "file_mgr.h"
 
-#include "config.h"
+#include "libs/common/config.hpp"
 #include <fmt/format.h>
 
 namespace dbcore::file_mgr

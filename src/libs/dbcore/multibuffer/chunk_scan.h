@@ -86,7 +86,7 @@ namespace dbcore::multibuffer
 
             query::constant get_val(const std::string& fldname) override
             {
-                if (m_layout.get_schema().type(fldname) == dbcore::record::schema::sql_types::integer)
+                if (m_layout.get_schema()->type(fldname) == dbcore::record::schema::sql_types::integer)
                     return query::constant(get_int(fldname));
                 else
                     return query::constant(get_str(fldname));
@@ -94,7 +94,7 @@ namespace dbcore::multibuffer
 
             bool has_field(const std::string& fldname) override
             {
-                return m_layout.get_schema().has_field(fldname);
+                return m_layout.get_schema()->has_field(fldname);
             }
 
             void close() override

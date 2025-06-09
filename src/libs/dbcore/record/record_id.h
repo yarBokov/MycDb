@@ -12,6 +12,10 @@ namespace dbcore::record
             int m_slot;
 
         public:
+            record_id()
+                : m_blk_num(-1), m_slot(-1)
+            {}
+
             explicit record_id(int blk_num, int slot)
                 :  m_blk_num(blk_num), m_slot(slot)
             {}

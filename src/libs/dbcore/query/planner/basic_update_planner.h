@@ -18,7 +18,7 @@ namespace dbcore::query
                 : m_mdm(mdm)
             {}
 
-            std::size_t execute_insert(parse::insert_data& data, tx::transaction& tx) override
+            std::size_t execute_insert(parse::insert_data& data, std::shared_ptr<tx::transaction> tx) override
             {
                 auto p = std::make_unique<plan::table_plan>(tx, data.table_name(), m_mdm);
                 auto us = dynamic_cast<scan::i_update_scan&>(*p->open());
@@ -33,7 +33,7 @@ namespace dbcore::query
                 return 1;
             }
 
-            std::size_t execute_delete(parse::delete_data& data, tx::transaction& tx) override
+            std::size_t execute_delete(parse::delete_data& data, std::shared_ptr<tx::transaction> tx) override
             {
                 auto p = std::make_unique<plan::select_plan>(
                     std::move(std::make_unique<plan::table_plan>(tx, data.table_name(), m_mdm)), data.pred());
@@ -48,7 +48,7 @@ namespace dbcore::query
                 return count;
             }
 
-            std::size_t execute_modify(parse::modify_data& data, tx::transaction& tx) override
+            std::size_t execute_modify(parse::modify_data& data, std::shared_ptr<tx::transaction> tx) override
             {
                 auto p = std::make_unique<plan::select_plan>(
                     std::move(std::make_unique<plan::table_plan>(tx, data.table_name(), m_mdm)), data.pred());
@@ -64,20 +64,20 @@ namespace dbcore::query
                 return count;
             }
 
-            std::size_t execute_create_table(parse::create_table_data& data, tx::transaction& tx) override
+            std::size_t execute_create_table(parse::create_table_data& data, std::shared_ptr<tx::transaction> tx) override
             {
                 auto sch = data.new_schema();
                 m_mdm.create_table(data.table_name(), sch, tx);
                 return 0;
             }
 
-            std::size_t execute_create_view(parse::create_view_data& data, tx::transaction& tx) override
+            std::size_t execute_create_view(parse::create_view_data& data, std::shared_ptr<tx::transaction> tx) override
             {
                 m_mdm.create_view(data.view_name(), data.view_def(), tx);
                 return 0;
             }
 
-            std::size_t execute_create_index(parse::create_index_data& data, tx::transaction& tx) override
+            std::size_t execute_create_index(parse::create_index_data& data, std::shared_ptr<tx::transaction> tx) override
             {
                 m_mdm.create_index(data.index_name(), data.table_name(), data.field_name(), tx);
                 return 0;
