@@ -13,7 +13,7 @@ namespace dbcore::tx
         set_str
     };
 
-    int log_operation_to_int(log_operation log_op)
+    inline int log_operation_to_int(log_operation log_op)
     {
         return (static_cast<int>(log_op) / sizeof(int)) * sizeof(int);
     }

@@ -4,6 +4,8 @@
 #include <string>
 #include <mutex>
 
+#include "libs/dbcore/tx/log_ops.h"
+
 #include "libs/dbcore/file/file_mgr.h"
 #include "libs/dbcore/buffer/buffer_mgr.h"
 #include "libs/dbcore/log/log_mgr.h"

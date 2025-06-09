@@ -59,7 +59,7 @@ namespace dbcore::index
                 else if (m_contents.get_data_val(m_curr_slot) == m_search_key)
                     return true;
                 else
-                    try_overflow();
+                    return try_overflow();
             }
 
             record::record_id get_data_rid() const

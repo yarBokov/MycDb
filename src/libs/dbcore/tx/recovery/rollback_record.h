@@ -12,12 +12,8 @@ namespace dbcore::tx
             int m_tx_num;
 
         public:
-            rollback_record() : m_tx_num(-1) {}
-            explicit rollback_record(file_mgr::page& p)
-            {
-                int t_pos = sizeof(int);
-                m_tx_num = p.get_int(t_pos);
-            }
+            rollback_record();
+            explicit rollback_record(file_mgr::page& p);
         
             log_operation operation() const override;
             int tx_num() const override;

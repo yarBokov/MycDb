@@ -405,7 +405,8 @@ namespace ssh
                         auto current_time = std::chrono::steady_clock::now();
                         auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(current_time - start_time).count();
                         
-                        if (elapsed >= timeout) {
+                        if (elapsed >= timeout)
+                        {
                             ssh_channel_close(channel);
                             throw ssh_exception("Command execution timed out: " + command, m_session.get());
                         }
@@ -451,22 +452,19 @@ namespace ssh
                 if (!channel)
                     throw ssh_exception("Failed to create SSH channel", m_session.get());
 
-                std::unique_ptr<ssh_channel_struct, decltype(&ssh_channel_free)> 
-                    channel_guard(channel, ssh_channel_free);
+                std::unique_ptr<ssh_channel_struct, decltype(&ssh_channel_free)> channel_guard(channel, ssh_channel_free);
 
                 int return_code = ssh_channel_open_session(channel);
                 if (return_code != SSH_OK)
                     throw ssh_exception("Failed to open SSH channel", m_session.get());
 
                 return_code = ssh_channel_request_pty(channel);
-                if (return_code != SSH_OK) {
+                if (return_code != SSH_OK)
                     throw ssh_exception("Failed to request PTY for command: " + command, m_session.get());
-                }
 
                 return_code = ssh_channel_request_shell(channel);
-                if (return_code != SSH_OK) {
+                if (return_code != SSH_OK)
                     throw ssh_exception("Failed to request shell for command: " + command, m_session.get());
-                }
 
                 std::string cmd_with_newline = command + "\n";
                 ssh_channel_write(channel, cmd_with_newline.c_str(), cmd_with_newline.size());
@@ -477,8 +475,10 @@ namespace ssh
                 bool eof = false;
                 auto start_time = std::chrono::steady_clock::now();
 
-                while (!eof) {
-                    if (timeout > 0) {
+                while (!eof)
+                {
+                    if (timeout > 0)
+                    {
                         auto current_time = std::chrono::steady_clock::now();
                         auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(current_time - start_time).count();
                         
@@ -489,29 +489,30 @@ namespace ssh
                     }
 
                     int nbytes = ssh_channel_read(channel, buffer, sizeof(buffer), 0);
-                    if (nbytes > 0) {
+                    if (nbytes > 0)
                         stdout_result.append(buffer, nbytes);
-                    } else if (nbytes == SSH_ERROR) {
+                    else if (nbytes == SSH_ERROR)
                         throw ssh_exception("Error reading from SSH channel stdout", m_session.get());
-                    }
+                    
 
                     nbytes = ssh_channel_read(channel, buffer, sizeof(buffer), 1);
-                    if (nbytes > 0) {
+                    if (nbytes > 0)
                         stderr_result.append(buffer, nbytes);
-                    } else if (nbytes == SSH_ERROR) {
+                    else if (nbytes == SSH_ERROR)
                         throw ssh_exception("Error reading from SSH channel stderr", m_session.get());
-                    }
+                    
 
-                    if (nbytes == 0) {
+                    if (nbytes == 0)
+                    {
                         eof = ssh_channel_is_eof(channel);
-                        if (!eof) {
+                        if (!eof)
                             std::this_thread::sleep_for(std::chrono::milliseconds(10));
-                        }
                     }
                 }
 
                 int exit_status = ssh_channel_get_exit_status(channel);
-                if (exit_status != 0) {
+                if (exit_status != 0)
+                {
                     throw ssh_exception(fmt::format("Command failed with exit status {}: {}\nStderr: {}", 
                         exit_status, command, stderr_result), m_session.get());
                 }

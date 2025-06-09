@@ -10,7 +10,6 @@ namespace dbcore::tx
 
     log_operation start_record::operation() const { return log_operation::start; }
     int start_record::tx_num() const { return m_tx_num; }
-    void start_record::undo(std::shared_ptr<transaction> tx) { }
     std::string start_record::to_string() const { return "<START " + std::to_string(m_tx_num) + ">"; }
 
     int start_record::write_to_log(log_mgr::log_mgr& lm, int tx_number)

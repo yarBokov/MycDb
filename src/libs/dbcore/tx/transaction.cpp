@@ -7,7 +7,7 @@ namespace dbcore::tx
     std::mutex transaction::tx_num_mtx;
 
     transaction::transaction(file_mgr::file_mgr& fm, log_mgr::log_mgr& lm, buffer_mgr::buffer_mgr& bm)
-        : m_fm(fm), m_bm(bm), m_buffers(bm), m_recovery_mgr(std::make_shared<transaction>(this), next_tx_num(), lm, bm), m_tx_num(m_next_tx)
+        : m_fm(fm), m_bm(bm), m_buffers(bm), m_recovery_mgr(this, next_tx_num(), lm, bm), m_tx_num(m_next_tx)
     {}
 
     void transaction::commit()

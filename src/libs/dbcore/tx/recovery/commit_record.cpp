@@ -11,7 +11,6 @@ namespace dbcore::tx
 
     log_operation commit_record::operation() const { return log_operation::commit; }
     int commit_record::tx_num() const { return m_tx_num; }
-    void commit_record::undo(std::shared_ptr<transaction> tx) { }
     std::string commit_record::to_string() const { return "<COMMIT " + std::to_string(m_tx_num) + ">"; }
 
     int commit_record::write_to_log(log_mgr::log_mgr& lm, int tx_number)

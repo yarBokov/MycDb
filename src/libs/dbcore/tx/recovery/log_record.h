@@ -12,8 +12,6 @@
 
 namespace dbcore::tx
 {
-    class transaction;
-    
     class log_record
     {
         public:

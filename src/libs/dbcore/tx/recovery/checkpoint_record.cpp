@@ -10,7 +10,6 @@ namespace dbcore::tx
     { 
         return -1; 
     }
-    void checkpoint_record::undo(std::shared_ptr<transaction> tx) { }
     std::string checkpoint_record::to_string() const 
     { 
         return "<CHECKPOINT>"; 

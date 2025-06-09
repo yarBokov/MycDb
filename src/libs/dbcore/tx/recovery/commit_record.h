@@ -5,14 +5,14 @@
 #include "libs/dbcore/log/log_mgr.h"
 
 namespace dbcore::tx
-{
+{    
     class commit_record : public log_record
     {
         private: 
             int m_tx_num;
 
         public:
-            commit_record() : m_tx_num(-1) {}
+            commit_record();
             explicit commit_record(file_mgr::page& p);
         
             log_operation operation() const override;
