@@ -39,16 +39,31 @@ set(KRB5_INCLUDE_DIRS
   ${KRB5_BASE_DIR}/src/lib
   ${KRB5_BASE_DIR}/lib64/include)
 
-find_library(KRB5_LIBRARIES NAMES 
-    krb5 kdb5 krb5_db2 gssapi_krb5 kadm5srv_mit krb5support gssrpc HINTS ${KBR5_LIB_HINT})
-
-if (NOT KRB5_LIBRARIES)
-    message(FATAL_ERROR "Kerberos libraries not found in ${KBR5_LIB_HINT}")
-endif()
+find_library(KRB5_LIBRARY krb5 HINTS ${KBR5_LIB_HINT})
+find_library(KRB5_KDB5_LIBRARY kdb5 HINTS ${KBR5_LIB_HINT})
+find_library(KRB5_DB2_LIBRARY krb5_db2 HINTS ${KBR5_LIB_HINT})
+find_library(KRB5_GSSAPI_LIBRARY gssapi_krb5 HINTS ${KBR5_LIB_HINT})
+find_library(KRB5_KADM5SRV_MIT_LIBRARY kadm5srv_mit HINTS ${KBR5_LIB_HINT})
+find_library(KRB5_GSSRPC_LIBRARY gssrpc HINTS ${KBR5_LIB_HINT})
+find_library(KRB5_COM_ERR_LIBRARY com_err HINTS ${KBR5_LIB_HINT})
+find_library(KRB5_K5CRYPTO_LIBRARY k5crypto HINTS ${KBR5_LIB_HINT})
+find_library(KRB5_SUPPORT_LIBRARY krb5support HINTS ${KBR5_LIB_HINT})
 
 add_library(krb5::krb5 INTERFACE IMPORTED)
-
 target_include_directories(krb5::krb5 INTERFACE ${KRB5_INCLUDE_DIRS})
-target_link_libraries(krb5::krb5 INTERFACE KRB5_LIBRARIES)
+target_link_libraries(krb5::krb5
+  INTERFACE
+    -Wl,--start-group
+    ${KRB5_LIBRARY}
+    ${KRB5_KDB5_LIBRARY}
+    ${KRB5_DB2_LIBRARY}
+    ${KRB5_GSSAPI_LIBRARY}
+    ${KRB5_KADM5SRV_MIT_LIBRARY}
+    ${KRB5_GSSRPC_LIBRARY}
+    ${KRB5_COM_ERR_LIBRARY}
+    ${KRB5_K5CRYPTO_LIBRARY}
+    ${KRB5_SUPPORT_LIBRARY}
+    resolv
+    -Wl,--end-group)
 
 message(STATUS "Configured Kerberos MIT V5: ${KRB5_LIBRARIES}")

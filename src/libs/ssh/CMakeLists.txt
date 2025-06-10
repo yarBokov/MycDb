@@ -6,7 +6,13 @@ decode_module_path(
 
 get_local_sources(sources_list)
 
-add_library(${target_name} STATIC ${sources_list})
+if(STATIC)
+    set(lib_type STATIC)
+else()
+    set(lib_type SHARED)
+endif()
+
+add_library(${target_name} ${lib_type} ${sources_list})
 
 if (NOT "${target_alias}" STREQUAL "")
     add_library(${target_alias} ALIAS ${target_name})
