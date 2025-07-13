@@ -31,6 +31,7 @@
 #include "tx/log_ops.h"
 #include "tx/buffer_list.h"
 #include "tx/transaction.h"
+#include "tx/isolation_level.h"
 
 #include "record/layout.h"
 #include "record/record_id.h"
